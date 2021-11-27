@@ -5,8 +5,8 @@ plugins:
   - include-markdown
 nav:
     - 'About': README.md
-    - '3rd Party Copy':
-    - 'Erasure Encoding':
+    - '3rd Party Copy': tpc/README.md
+    - 'Erasure Encoding': ec/README.md
 theme: 
   name: readthedocs
 # more options: https://www.mkdocs.org/user-guide/choosing-your-theme/#readthedocs
