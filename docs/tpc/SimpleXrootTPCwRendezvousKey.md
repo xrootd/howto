@@ -1,13 +1,13 @@
 Xrootd TPC using rendezvous key works this way:
 
-1. The client authenciated with both the data source and the destination,
+1. The client authenciates with both the data source and the destination,
   and gets authorization for read and write.
 1. The client supplies a rendezvous key to both the source and destination.
-1. The destination initiate a pull request using a pre-configured program
+1. The destination initiates a pull request using a pre-configured program
   or script.
 1. In the pull request, the destination authenticates against the source.
    It will then use the rendezvous key for authorization. 
-1. The destination pull the data file.
+1. The destination pulls the data file.
 
 An example config file for both source and destination looks like this:
 ```
