@@ -1,0 +1,12 @@
+site_name: Xrootd HowTos
+docs_dir: docs
+site_dir: site
+plugins:
+  - include-markdown
+nav:
+    - 'About': README.md
+    - '3rd Party Copy':
+    - 'Erasure Encoding':
+theme: 
+  name: readthedocs
+# more options: https://www.mkdocs.org/user-guide/choosing-your-theme/#readthedocs
