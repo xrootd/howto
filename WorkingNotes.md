@@ -1,8 +1,8 @@
-## What is this repo
-1. .readthedocs.yml
-2. mkdocs.yml   (This file contains the structure of the left navegation panel)
-3. requirements.txt
-3. docs/ (the actual doc directory)  
+## Structure of this repo
+1. .readthedocs.yml: hook to readthedocs.io
+2. requirements.txt: list of python packages to be used by mkdocs
+3. mkdocs.yml: contains the structure of the left navegation panel at readthedocs.io
+4. docs/: the actual doc directory  
 
 ## Limit mkdocs.yml navegation panel to two levels
 It seems standalone mkdocs can support >2 nested levels in navegation panel. But at the 
