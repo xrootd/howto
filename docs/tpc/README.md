@@ -14,3 +14,5 @@ We will assume that `TLS` is always enabled (which means using Xrootd release `5
 ## A simple TPC using xroot protocol and rendezvous key
 {% include-markdown "./SimpleXrootTPCwRendezvousKey.md" %}
 
+## An example of WLCG TPC configuration with X509 authentication
+{% include-markdown "./WLCGx509TPC.md" %}
