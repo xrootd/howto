@@ -9,4 +9,5 @@ nav:
     - 'Erasure Encoding': ec/README.md
 theme: 
   name: readthedocs
+#  highlightjs: false
 # more options: https://www.mkdocs.org/user-guide/choosing-your-theme/#readthedocs

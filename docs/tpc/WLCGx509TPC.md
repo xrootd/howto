@@ -96,6 +96,9 @@ http.staticpreload http://static/robots.txt /etc/xrootd/robots.txt
 http.secxtractor libXrdVoms.so
 http.header2cgi Authorization authz
 
+# Set all.sitename in order to use Macaroon
+all.sitename MYSITE
+
 http.exthandler xrdtpc libXrdHttpTPC.so
 http.exthandler xrdmacaroons libXrdMacaroons.so
 macaroons.secretkey /etc/xrootd/macaroon-secret
