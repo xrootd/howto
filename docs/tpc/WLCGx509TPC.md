@@ -1,9 +1,40 @@
-An example WLCG TPC setup will cover the following features:
+### The many different use cases
 
-1. Work with both Xrootd storage system (on Posix local/shared file systems), or Xrootd proxy (aka, DTN)
-1. Use X509/VOMS for authentication and authorization
-1. Support HTTP TPC via the macaroon tokens
-1. Support Xrootd TPC via X509 proxy delegation
+Xrootd is used in a wide range of cases to provide TPC services. The example configuration files below 
+will try to covers several use cases. Sorting out these use cases and concepts behind them will help
+understand the example configuration file.
+
+How xrootd TPC service will access the storage?
+
+  * If storage is not mounted to the xrootd TPC service node, the TPC node functions as a Xrootd DTN
+    (a.k.a xrootd proxy, or gateway to a backend storage - on LAN or WAN).
+  * If storage is mounted to the xrootd TPC node as a posix file system, the TPC node functions
+    as a regular xrootd storage server. However, there are two sub-categories:
+    - The storage is a local posix file system (only mounted to that particular TPC node, e.g. XFS 
+      filesystem on a disk-array)
+    - The storage is a shared posix file system (mount on many nodes, e.g Lustre or GPFS).
+
+A single xrootd TPC service node, or a cluster. A cluster is how xrootd scales. In a cluster, there are
+
+  - Several server nodes. Their roles in the cluster are either `server` or `proxy server`. The latter
+    refers to the scenario where xrootd TPC service function as DTNs.
+    + If server nodes mount local filesystems, then each of they have access to a different
+      set of data files.
+    + If server nodes mount a shared filesystem, then they all have access to the same set
+      of files
+    + If server nodes are `proxy server`, they usuall have access to the same set of files.
+  - A redirector node. Its role is either a `manager` or `proxy manager`. A redirector sends a client to 
+    a `server` or `proxy server`, based on which one has the files wanted by the client. (A redirector
+    is usually lightweight, require very little resource).
+
+An example WLCG TPC setup will cover the following:
+
+  1. TPC services described in the above use case scenarios: 
+    - `DTN` vs `local posix file system` vs `share posix file system`
+    - a single TPC node or a cluster.  
+  1. Use X509/VOMS for authentication and authorization
+  1. Support HTTP TPC via the macaroon tokens
+  1. Support Xrootd TPC via X509 proxy delegation
 
 ### Requirements
 1. A copy of host certificate at /etc/grid-security/xrd/{xrdcert.pem, xrdkey.pem}. These 
@@ -40,9 +71,12 @@ xrd.tlsca certdir /etc/grid-security/certificates
 xrootd.tls capable all
 
 if $(redirector)
+    # "manager" role: for a cluster
+    #
     # Manager (rediector) role
-    # For a Xrootd storage system: all.role manager
-    # For a Xrootd DTN: all.role proxy manager
+    # For a 'proxy manager'
+    #all.role proxy manager
+    # For a 'manager'
     all.role manager
 
     # For Xrootd DTN, or Xrootd storage on a shared file system
@@ -51,14 +85,17 @@ if $(redirector)
     # For Xroodt DTN
     #pss.ckslib adler32 /usr/lib64/libXrdPss.so
 else
-    # Data server / proxy server (DTN) Role
-    # For a standalone Xrootd storage, comment out
-    # For a Xrootd storage cluster: all.role server
-    # For a standalone Xrootd DTN: ofs.osslib /usr/lib64/libXrdPss.so
-    # For a Xrootd DTN cluster: all.role proxy server
-    all.role server
+    # "server" role: for both single node and cluster
+    #
+    # config the Role: server / proxy server, standalone or cluster
+    # For a standalone 'proxy server'
     #ofs.osslib /usr/lib64/libXrdPss.so
+    # For a standalone 'server'
+    #NOTHING
+    # For a 'proxy server' in a cluster
     #all.role proxy server
+    # For a 'server' in a cluster
+    all.role server
 
     # Enable security
     xrootd.seclib /usr/lib64/libXrdSec.so
@@ -68,10 +105,10 @@ else
     sec.protocol /usr/lib64 gsi -dlgpxy:1 -exppxy:=creds -ca:1 -crl:3 -gridmap:/dev/null
 
     # Xrootd TPC
-    # Xrootd storage: pgm /usr/bin/xrdcp  (this is the default)
-    # Xrootd DTN: pgm /etc/xrootd/xrdcp-tpc.sh
-    ofs.tpc fcreds ?gsi =X509_USER_PROXY ttl 60 70 xfr 100 autorm pgm /usr/bin/xrdcp
+    # For 'proxy server': pgm /etc/xrootd/xrdcp-tpc.sh
     #ofs.tpc fcreds ?gsi =X509_USER_PROXY ttl 60 70 xfr 100 autorm pgm /etc/xrootd/xrdcp-tpc.sh
+    # For 'server': 
+    ofs.tpc fcreds ?gsi =X509_USER_PROXY ttl 60 70 xfr 100 autorm pgm /usr/bin/xrdcp
 
     # Authorizatoin
     acc.audit deny
@@ -143,6 +180,7 @@ g /dteam <my.storage.path>/dteam/doma rwild
 1. line 3: grant all other ATLAS users (all of those in VO group /atlas) permission 'rl'
 1. line 4: grant all /cms users (all users in VO group /cms) permission 'rl'
 1. line 5: grant all /dteam users (all users in VO group /dteam) permission 'rwild'
+1. default is deny access
 
 ### The `robots.txt`
 It is there to ask the internet search engines to stay away:
