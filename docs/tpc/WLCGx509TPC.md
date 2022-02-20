@@ -27,6 +27,12 @@ A single xrootd TPC service node, or a cluster. A cluster is how xrootd scales. 
     a `server` or `proxy server`, based on which one has the files wanted by the client. (A redirector
     is usually lightweight, require very little resource).
 
+So before moving forward, ask youself
+
+  * Do I run DTN or do I have access to storage
+  * Is this a local filesystem or a shared filesystem?
+  * Do I run a single node, or a cluster.
+
 An example WLCG TPC setup will cover the following:
 
   1. TPC services described in the above use case scenarios: 
@@ -44,7 +50,8 @@ files should be owned by user xrootd (or equivalent).
 1. RPMs: xrootd xrootd-voms voms libmacaroons (and their dependences). Other RPMs may also be required.
 1. (optional) TCmalloc (gperftools-libs) or JEmalloc (jemalloc) may provide better memory management for xrootd.
 
-One may also need to set nproc >= 8192 and nofile >= 8192 if the systems will be under high load.
+One may also need to set nproc >= 8192 and nofile >= 8192 in /etc/security/limits.d if the systems
+will be under high load.
 
 ### Example Xrootd configuration file
 We expect TLS be enabled on all nodes, include the redirectors.
