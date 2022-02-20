@@ -63,7 +63,7 @@ mkdir build
 cd build
 cmake3 -DCMAKE_INSTALL_PREFIX=. ../xrootd
 make -j
-exit # CentOS 7 only
+[ ! -z "$X_SCLS" ] && exit # CentOS 7 only
 cd $basedir
 ```
 
