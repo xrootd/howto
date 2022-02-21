@@ -8,7 +8,8 @@ When configurating Xrootd for 3rd Parth Copy, there are several things to consid
 4. What data transfer protocol(s) will be used, xroot and/or https?
 5. What authentication/authoriaztion mechanism will be used? X509/VOMS, Token, sss key?
 
-There is no way to cover all the above combinations but we will provide examples to cover some typical use cases. 
+As an introduction, we will first cover a very simple case. After that, we
+will provide a more complicated configuration example to cover several use cases in WLCG.
 We will assume that `TLS` is always enabled (which means using Xrootd release `5.3.0` and above).
 
 ## A simple TPC using xroot protocol and rendezvous key

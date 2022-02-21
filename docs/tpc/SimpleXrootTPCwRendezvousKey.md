@@ -1,7 +1,7 @@
 Xrootd TPC using rendezvous key works this way:
 
-1. The client authenciates with both the data source and the destination,
-  and gets authorization for read and write.
+1. The client authenciates with both the data source and the destination
+  (using GSI or others) and obtains authorization for read and write.
 1. The client supplies a rendezvous key to both the source and destination.
 1. The destination initiates a pull request using a pre-configured program
   or script.
@@ -9,7 +9,8 @@ Xrootd TPC using rendezvous key works this way:
    It will then use the rendezvous key for authorization. 
 1. The destination pulls the data file.
 
-An example config file for both source and destination looks like this:
+An example config file for TPC on a single Xrootd storage node like this 
+the following:
 ```
 all.adminpath /tmp/xrootd/var/spool
 all.pidpath   /tmp/xrootd/var/run
@@ -30,11 +31,7 @@ xrootd.tls capable all -data
 # Enable Security
 xrootd.seclib libXrdSec.so
 
-# Enable "sss" security, the main user facing security (can be others)
-sec.protocol sss -r 30 -s /etc/xrootd/mysss.keytab
-
-# Enable "gsi" security, for destination TPC program/script to authenticate 
-# with the source.  
+# Enable "gsi" security
 sec.protparm gsi -vomsfun:libXrdVoms.so -vomsfunparms:dbg
 sec.protocol gsi -ca:1 -crl:3 -gridmap:/dev/null
 
@@ -44,7 +41,7 @@ acc.authdb /etc/xrootd/auth_file
 acc.authrefresh 60
 ofs.authorize 1
 
-# Xrootd TPC
+# Xrootd TPC using rendezvous key
 ofs.tpc logok autorm pgm /etc/xrootd/xrdcp-tpc.sh
 
 # Env var needed by the above TPC script.
@@ -57,17 +54,14 @@ from the client to both source and destination. This also means that the xrootd
 program needs to have access to the `/etc/security/xrd/{xrdcert.pem, xrdkey.pem}`
 (a copy of host cert and key).
 
-The main user facing security method (e.g. "sss") can be any kind of security 
-method available in xrootd, including "gsi" (in which case the main and secondary
-security method are merged).
-
-The secondary security "gsi" is conveniently used here to allow the TPC program
-(xrdcp-tpc.sh) to
-authenticate againt the source. It will uses the rendezvous key for 
-authorization. The `xrdcp-tpc.sh` looks like the following.
+The destination will run the TPC program (xrdcp-tpc.sh). The program authenticates
+againt the source (using GSI), it then uses the rendezvous key for authorization.
+After that, it pulls the data. The `xrdcp-tpc.sh` looks like the following.
 ```
 #!/bin/sh
 
+# To work with data source's GSI, a X509 proxy is needed. It can be any X509 
+# proxy - the authorization uses the rendezvous key, not the X509 proxy.
 export X509_USER_PROXY=/tmp/x509up_u$(id -u)
 
 # Note that the main xrootd config file exported the location of 
@@ -85,4 +79,7 @@ xrdcp -f $@
 
 Please make sure the above script has `u+rx` bits set.
 
+Note that for xrootd TPC, both sides (source and destination) needs to be 
+configured to support xrootd TPC, whereas for HTTP TPC, only one side (usually
+the desitination) needs to be configured to support HTTP TPC.
 

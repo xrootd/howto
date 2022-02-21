@@ -1,23 +1,25 @@
 ### The many different use cases
 
-Xrootd is used in a wide range of cases to provide TPC services. The example configuration files below 
-will try to covers several use cases. Sorting out these use cases and concepts behind them will help
-understand the example configuration file.
+In WLCG, Xrootd is used in a wide range of cases to provide TPC services. The example configuration 
+files below will try to covers several use cases. Sorting out these use cases and concepts behind 
+them will help understand the example configuration file.
 
-How xrootd TPC service will access the storage?
+**How xrootd TPC service will access the storage?**
 
   * If storage is not mounted to the xrootd TPC service node, the TPC node functions as a Xrootd DTN
-    (a.k.a xrootd proxy, or gateway to a backend storage - on LAN or WAN).
+    (a.k.a xrootd `proxy`, or gateway to a backend storage - on LAN or WAN).
   * If storage is mounted to the xrootd TPC node as a posix file system, the TPC node functions
     as a regular xrootd storage server. However, there are two sub-categories:
     - The storage is a local posix file system (only mounted to that particular TPC node, e.g. XFS 
       filesystem on a disk-array)
     - The storage is a shared posix file system (mount on many nodes, e.g Lustre or GPFS).
 
-A single xrootd TPC service node, or a cluster. A cluster is how xrootd scales. In a cluster, there are
+**A single xrootd TPC service node, or a cluster?**
+
+A cluster is how xrootd scales. In a cluster, there are
 
   - Several server nodes. Their roles in the cluster are either `server` or `proxy server`. The latter
-    refers to the scenario where xrootd TPC service function as DTNs.
+    refers to the scenario where xrootd TPC service function as DTNs. Why this is important?
     + If server nodes mount local filesystems, then each of they have access to a different
       set of data files.
     + If server nodes mount a shared filesystem, then they all have access to the same set
@@ -27,13 +29,15 @@ A single xrootd TPC service node, or a cluster. A cluster is how xrootd scales. 
     a `server` or `proxy server`, based on which one has the files wanted by the client. (A redirector
     is usually lightweight, require very little resource).
 
-So before moving forward, ask youself
+If there is only a single node, it is either a `server` or a `proxy server`.
 
-  * Do I run DTN or do I have access to storage
+**So before moving forward, ask youself**
+
+  * Do I run DTN or do I have filesystem access to storage
   * Is this a local filesystem or a shared filesystem?
   * Do I run a single node, or a cluster.
 
-An example WLCG TPC setup will cover the following:
+**An example WLCG TPC setup will cover the following:**
 
   1. TPC services described in the above use case scenarios: 
     - `DTN` vs `local posix file system` vs `share posix file system`
@@ -111,10 +115,10 @@ else
     sec.protparm gsi -vomsfun:/usr/lib64/libXrdSecgsiVOMS.so -vomsfunparms:dbg
     sec.protocol /usr/lib64 gsi -dlgpxy:1 -exppxy:=creds -ca:1 -crl:3 -gridmap:/dev/null
 
-    # Xrootd TPC
-    # For 'proxy server': pgm /etc/xrootd/xrdcp-tpc.sh
+    # Xrootd TPC using X509 proxy delegation
+    # For 'proxy server'
     #ofs.tpc fcreds ?gsi =X509_USER_PROXY ttl 60 70 xfr 100 autorm pgm /etc/xrootd/xrdcp-tpc.sh
-    # For 'server': 
+    # For 'server'
     ofs.tpc fcreds ?gsi =X509_USER_PROXY ttl 60 70 xfr 100 autorm pgm /usr/bin/xrdcp
 
     # Authorizatoin
@@ -137,7 +141,7 @@ http.selfhttps2http no
 
 # X509 VOMS in HTTP(s) protocol
 http.staticpreload http://static/robots.txt /etc/xrootd/robots.txt
-http.secxtractor libXrdVoms.so
+http.secxtractor libXrdVoms.so dbg
 http.header2cgi Authorization authz
 
 # Set all.sitename in order to use Macaroon
@@ -177,10 +181,10 @@ xrdcp --server $TCPstreamOpts -f $src root://$XRDXROOTD_PROXY/${dst}
 ### The access control file `/etc/xrootd/auth_file`:
 ```
 = atlasprod o: atlas g: /atlas r: production
-x atlasprod <my.storage.path> rwildn
-g /atlas <my.storage.path> rl
-g /cms <my.storage.path> rl
-g /dteam <my.storage.path>/dteam/doma rwild
+x atlasprod /dir1 rwildn
+g /atlas /dir1 rl
+g /cms /dir2 rl
+g /dteam /dir1 rwild /dir2 rwild
 ```
 1. line 1: define a special compound id "atlasprod" to identify all users within ATLAS VO with "/atlas/Role=production".
 1. line 2: grant this "atasprod" access permission 'rwildn'
