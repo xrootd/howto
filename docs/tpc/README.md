@@ -17,3 +17,6 @@ We will assume that `TLS` is always enabled (which means using Xrootd release `5
 
 ## An example of WLCG TPC configuration with X509 authentication
 {% include-markdown "./WLCGx509TPC.md" %}
+
+## Using xrootd to support TPC for S3 object store
+{% include-markdown "./S3storge.md" %}

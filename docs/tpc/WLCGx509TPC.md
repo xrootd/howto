@@ -67,7 +67,6 @@ set redirector = <myrdr_hostname>
 all.manager $(redirector):1213
 
 xrd.port 1094
-xrootd.chksum adler32
 
 all.adminpath /var/spool/xrootd/var/spool
 all.pidpath   /var/run/xrootd/var/run
@@ -83,6 +82,8 @@ xrd.tlsca certdir /etc/grid-security/certificates
 xrootd.tls capable all
 
 if $(redirector)
+    xrootd.chksum adler32
+
     # "manager" role: for a cluster
     #
     # Manager (rediector) role
@@ -97,6 +98,8 @@ if $(redirector)
     # For Xroodt DTN
     #pss.ckslib adler32 /usr/lib64/libXrdPss.so
 else
+    xrootd.chksum adler32
+
     # "server" role: for both single node and cluster
     #
     # config the Role: server / proxy server, standalone or cluster
