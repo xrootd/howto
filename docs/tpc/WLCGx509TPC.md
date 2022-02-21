@@ -1,6 +1,7 @@
 ### The many different use cases
 
-In WLCG, Xrootd is used in a wide range of cases to provide TPC services. The example configuration 
+In WLCG, Xrootd is used in a wide range of cases to provide TPC services, with HTTP TPC being the
+primary, and xrootd TPC the secondary. The example configuration 
 files below will try to covers several use cases. Sorting out these use cases and concepts behind 
 them will help understand the example configuration file.
 
@@ -14,7 +15,7 @@ them will help understand the example configuration file.
       filesystem on a disk-array)
     - The storage is a shared posix file system (mount on many nodes, e.g Lustre or GPFS).
 
-**A single xrootd TPC service node, or a cluster?**
+**A single node for TPC services, or a cluster?**
 
 A cluster is how xrootd scales. In a cluster, there are
 
