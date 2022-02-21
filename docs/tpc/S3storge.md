@@ -38,8 +38,8 @@ davix-get --s3accesskey $AWS_ACCESS_KEY_ID \
           --s3alternate https://${XRDXROOTD_PROXY}$file | xrdadler32 | awk '{print $1}'
 ```
 
-As you see from the above script, the ckecksum is calculated by fetch (`davix-get`) the
-file from the s3 storage. There are two drawbacks:
+As you see from the above script, the ckecksum is calculated by fetching (using `davix-get`)
+the file from the s3 storage. There are two drawbacks:
 
 * no place to store the ckecksum
 * may incure Egress charge if the s3 store is in a commercial cloud, e.g. 

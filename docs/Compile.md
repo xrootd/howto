@@ -44,7 +44,7 @@ git submodule update -- src/XrdClHttp
 git submodule update -- src/XrdCeph
 ```
 
-If you need the latest `XrdClHttp` (e.g. to support `s3`), do
+If you need the latest `XrdClHttp`, do
 
 ```
 cd src
