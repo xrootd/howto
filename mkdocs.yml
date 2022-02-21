@@ -3,6 +3,8 @@ docs_dir: docs
 site_dir: site
 plugins:
   - include-markdown
+  - search:
+      min_search_length: 2
 nav:
     - 'About': README.md
     - 'Compile xrootd': Compile.md
@@ -10,5 +12,6 @@ nav:
     - 'Erasure Encoding': ec/README.md
 theme: 
   name: readthedocs
+  plugins: 
 #  highlightjs: false
 # more options: https://www.mkdocs.org/user-guide/choosing-your-theme/#readthedocs
