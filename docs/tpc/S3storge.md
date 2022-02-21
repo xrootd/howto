@@ -15,17 +15,17 @@ use case is largely based on  the [WLCG TPC configurat example](#an-example-of-w
   setenv AWS_ACCESS_KEY_ID = GOOGS4MV4PQTK3D4G0LB34AN
   setenv AWS_SECRET_ACCESS_KEY = QtUMprl2j07m4VfzygcjJQlVrvO9ZfU+eKDbR2sP
   ```
-  * It will use scripts for checksum and xrootd TPC (examples below).
+  * xrootd will use scripts for checksum and xrootd TPC (examples below).
     - in the `else` clause of the configuration file, change the adler32 line to <p>
     ```
     xrootd.chksum max 32 adler32 /etc/xrootd/xrdadler32.sh
     ``` 
-  * It needs the Davix rpm (available from EPEL)
-  * A staging space. When writing to s3 storage, Davix temporarily store a complete file 
-    to this staging area before it uploads the file to the s3 store.
+  * Install the Davix rpm (available from EPEL)
+  * A staging space. When writing to s3 storage, Davix temporarily stores a complete file 
+    to this staging area before it uploads the file to the s3 storage.
     - The default space is /tmp. It can be changed by unix environment variable 
       **DAVIX_STAGING_AREA**
-  * It needs the XrdClHttp plugin and configuration to load the plugin
+  * xrootd needs the XrdClHttp plugin and configuration to load the plugin
 
 ### Checksum and an example /etc/xrootd/xrdadler32.sh
 
