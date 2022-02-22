@@ -54,21 +54,33 @@ xrootd.chksum adler32 /etc/xrootd/xrdadler32.sh
 ```
 #!/bin/sh
 
+# Make sure XrdEC is loaded, and there is no security issue.
+# Otherwise this script will not give the correct result.
+
+cksmtype="adler32"
 file=$1
-if [ -z "$XRDXROOTD_PROXY" ]; then  # check if this is a xrootdfs path
+
+# For testing purpose: manually supply XRDXROOTD_PROXY (format: host:port)
+# Note: when used by xrootd proxy, XRDXROOTD_PROXY is aleady defined.
+[ -z "$2" ] || export XRDXROOTD_PROXY=$2
+
+# If this is a xrootfs path, try getting XRDXROOTD_PROXY that way.
+if [ -z "$XRDXROOTD_PROXY" ]; then
     file=$(getfattr -n xroot.url --only-value $1 2>/dev/null)
+
+    # too bad, this is not a xrootdfs path
     [[ $file = root://* ]] || exit 1
+
     XRDXROOTD_PROXY=$(echo $file | sed -e 's+^root://++g' | awk -F\/ '{print $1}')
     file=$(echo $file | sed -e "s+^root://++g; s+^$XRDXROOTD_PROXY++g")
 fi
-cksmtype="adler32"
 
 hostlist=""
 strpver=0
 for h in $(xrdfs $XRDXROOTD_PROXY locate -h "*" | awk '{print $1}'); do
     ver=$(xrdfs $h xattr $file get xrdec.strpver 2>/dev/null | tail -1 | awk -F\" '{print $2}')
-    [ -z "$ver" ] && continue                   # this host does not have the strpver, or does not have the file
-    [ $ver -lt $strpver ] && continue           # this host has an older strpver, ignore! 
+    [ -z "$ver" ] && continue          # this host does not have the strpver, or does not have the file
+    [ $ver -lt $strpver ] && continue  # this host has an older strpver, ignore! 
     if [ $ver -eq $strpver ]; then
         hostlist="$hostlist $h"
     else 
@@ -89,7 +101,8 @@ if [ -z "$cksm" ]; then
 fi
 echo $cksm
 ```
-Do not forget to `chmod +x /etc/xrootd/xrdadler32.sh`.
+Do not forget to `chmod +x /etc/xrootd/xrdadler32.sh`. This script can also be used by 
+`xrootdfs` to check for checksum in a EC storage.
 
 #### An example of **/etc/xrootd/xrdcp-tcp.sh**
 
