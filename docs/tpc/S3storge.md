@@ -5,10 +5,12 @@ Xrootd can provide the following services to an S3 object store.
 * X509/VOMS authentication/authorization (and JWT in the future).
 
 In this case, Xrootd is used as a DTN to the S3 storage. It authenticates to the 
-S3 storage using a pair of access key and secret key. Configuring xrootd in this 
-use case is largely based on  the [WLCG TPC configurat example](#an-example-of-wlcg-tpc-configuration-with-x509-authentication), with the following additional configurations:
+S3 storage using a pair of access key and secret key (aka, username/password).
+Configuring xrootd in this use case is largely based on  the 
+[WLCG TPC configurat example](#an-example-of-wlcg-tpc-configuration-with-x509-authentication),
+with the following additional configurations:
 
-  * S3 object store uses the word **bucket** for **directory**
+  * S3 object store uses the word **bucket** for what we usually called **directory**.
   * Change to the configuration file (the `server` / `proxy serve` section in the `else` clause) <p>
   ```
   pss.origin https://s3store.xyz:port
@@ -20,12 +22,12 @@ use case is largely based on  the [WLCG TPC configurat example](#an-example-of-w
     ```
     xrootd.chksum max 32 adler32 /etc/xrootd/xrdadler32.sh
     ``` 
-  * Install the Davix rpm (available from EPEL)
+  * Install the Davix rpm (available from EPEL).
   * A staging space. When writing to s3 storage, Davix temporarily stores a complete file 
     to this staging area before it uploads the file to the s3 storage.
     - The default space is /tmp. It can be changed by unix environment variable 
       **DAVIX_STAGING_AREA**
-  * xrootd needs the XrdClHttp plugin and configuration to load the plugin
+  * xrootd needs the XrdClHttp plugin and configuration to load the plugin.
 
 ### Checksum and an example /etc/xrootd/xrdadler32.sh
 

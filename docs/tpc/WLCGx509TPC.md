@@ -71,7 +71,9 @@ xrd.port 1094
 all.adminpath /var/spool/xrootd/var/spool
 all.pidpath   /var/run/xrootd/var/run
 
-all.export <my.storage.path e.g. /data/dir1>
+all.export /dir1
+all.export /dir2
+
 # For DTN only
 # Expect the backend xrootd door to have the same all.export as the above
 #pss.origin <mybackend.storage.xrootd.door>:<port>

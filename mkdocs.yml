@@ -9,7 +9,7 @@ nav:
     - 'About': README.md
     - 'Compile xrootd': Compile.md
     - '3rd Party Copy': tpc/README.md
-    - 'Erasure Encoding': ec/README.md
+    - 'Erasure Coding': ec/README.md
 theme: 
   name: readthedocs
   plugins: 
