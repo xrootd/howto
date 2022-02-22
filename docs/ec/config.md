@@ -25,7 +25,7 @@ nbdta = 8
 nbprt = 2
 chsz = 1048576
 ```
-Here `nbdtaa` refers to the number of data chunks in an EC stripe, and `nbprt` refers
+Here `nbdta` refers to the number of data chunks in an EC stripe, and `nbprt` refers
 to the number of parity chunks in the stripe. `chsz` referst to the chunk size (Bytes).
 
 The extension of the file must be **.conf**.
