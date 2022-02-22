@@ -55,6 +55,12 @@ xrootd.chksum adler32 /etc/xrootd/xrdadler32.sh
 #!/bin/sh
 
 file=$1
+if [ -z "$XRDXROOTD_PROXY" ]; then  # check if this is a xrootdfs path
+    file=$(getfattr -n xroot.url --only-value $1 2>/dev/null)
+    [[ $file = root://* ]] || exit 1
+    XRDXROOTD_PROXY=$(echo $file | sed -e 's+^root://++g' | awk -F\/ '{print $1}')
+    file=$(echo $file | sed -e "s+^root://++g; s+^$XRDXROOTD_PROXY++g")
+fi
 cksmtype="adler32"
 
 hostlist=""
