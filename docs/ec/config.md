@@ -6,7 +6,11 @@ xrootd release (e.g. xrootd 5.3.0+) . There is a few things to consider for HW
 configuration:
 
 1. The xrootd cluster needs at least ** n + m ** data servers.
-2. EC already provides data redundancy. This reduces the need of using RAID.
+2. EC already provides data redundancy. This reduces the need of using RAID. If
+   RAID is not used, one can xrootd's 
+   [`oss.space` directive](https://xrootd.slac.stanford.edu/doc/dev54/ofs_config.htm#_Toc89982407)
+   to make indivudual filesystems available in xrootd. This method actually
+   provides an extra benefit when identifying miss files due to hardware failure.
 
 ### Enabling EC in xrootd clients
 
@@ -64,7 +68,7 @@ file=$1
 # Note: when used by xrootd proxy, XRDXROOTD_PROXY is aleady defined.
 [ -z "$2" ] || export XRDXROOTD_PROXY=$2
 
-# If this is a xrootfs path, try getting XRDXROOTD_PROXY that way.
+# If this is a xrootdfs path, try getting XRDXROOTD_PROXY that way.
 if [ -z "$XRDXROOTD_PROXY" ]; then
     file=$(getfattr -n xroot.url --only-value $1 2>/dev/null)
 
@@ -102,7 +106,7 @@ fi
 echo $cksm
 ```
 Do not forget to `chmod +x /etc/xrootd/xrdadler32.sh`. This script can also be used by 
-`xrootdfs` to check for checksum in a EC storage.
+`xrootdfs` to verify checksum in an XrdEC storage.
 
 #### An example of **/etc/xrootd/xrdcp-tcp.sh**
 
