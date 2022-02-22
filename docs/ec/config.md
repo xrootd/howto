@@ -11,7 +11,7 @@ configuration:
 ### Enabling EC in xrootd clients
 
 Xrootd clients that directly facing the backend storage will need to load the EC 
-library. The clients include adminsitrative tools `xrdcp/xrdfs/xrootdfs` and user 
+library. These clients include adminsitrative tools `xrdcp/xrdfs/xrootdfs` and user 
 facing xrootd proxy. To enable EC in xrootd clients:
 
 1. use a xrootd release that includes `libXrdEC.so` (likely xrootd 5.4.1).
@@ -25,8 +25,8 @@ nbdta = 8
 nbprt = 2
 chsz = 1048576
 ```
-Here `nbdtaa` refers to the number of data chunks in a stripe, and `nbprt` refers
-to the number of parity chunks in a stripe. `chsz` referst to the chunk size (Bytes).
+Here `nbdtaa` refers to the number of data chunks in an EC stripe, and `nbprt` refers
+to the number of parity chunks in the stripe. `chsz` referst to the chunk size (Bytes).
 
 ### Configuring a xrootd proxy using EC.
 
