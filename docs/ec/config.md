@@ -43,4 +43,72 @@ The extension of the file must be **.conf**.
 In addition to the requirement in the [Enabling EC in xrootd clients](#enable-ec-in-xrootd-clients) 
 section, please refers to the 
 [WLCG TPC example configuration](../tpc/#an-example-of-wlcg-tpc-configuration-with-x509-authentication)
-document for xrootd proxy (DTN) configuration.
+document for xrootd proxy (DTN) configuration. On the proxy server, an external checksum script
+is needed (using the following directive in xrootd configuration file).
+```
+xrootd.chksum adler32 /etc/xrootd/xrdadler32.sh
+```
+
+#### An example of **/etc/xrootd/xrdadler32.sh**
+
+```
+#!/bin/sh
+
+file=$1
+cksmtype="adler32"
+
+hostlist=""
+strpver=0
+for h in $(xrdfs $XRDXROOTD_PROXY locate -h "*" | awk '{print $1}'); do
+    ver=$(xrdfs $h xattr $file get xrdec.strpver 2>/dev/null | tail -1 | awk -F\" '{print $2}')
+    [ -z "$ver" ] && continue                   # this host does not have the strpver, or does not have the file
+    [ $ver -lt $strpver ] && continue           # this host has an older strpver, ignore! 
+    if [ $ver -eq $strpver ]; then
+        hostlist="$hostlist $h"
+    else 
+        strpver=$ver
+        hostlist="$h"
+        cksm=$(xrdfs $h xattr $file get xrdec.${cksmtype} 2>/dev/null | tail -1 | awk -F\" '{print $2}')
+    fi  
+done
+
+if [ -z "$cksm" ]; then
+    cksm=$(xrdcp -C ${cksmtype}:print -s -f root://$XRDXROOTD_PROXY/$1 /dev/null 2>&1 | \
+         head -1 | \
+         awk '{printf("%8s",$2)}' | \
+         sed -e 's/\ /0/g')
+    for h in $hostlist; do
+        xrdfs $h xattr $file set xrdec.${cksmtype}=$cksm 
+    done
+fi
+echo $cksm
+```
+Do not forget to `chmod +x /etc/xrootd/xrdadler32.sh`.
+
+#### An example of **/etc/xrootd/xrdcp-tcp.sh**
+
+```
+#!/bin/sh
+set -- `getopt S: -S 1 $*`
+while [ $# -gt 0 ]
+do
+  case $1 in
+  -S)
+      ((nstreams=$2-1))
+      [ $nstreams -ge 1 ] && TCPstreamOpts="-S $nstreams"
+      shift 2
+      ;;
+  --)
+      shift
+      break
+      ;;
+  esac
+done
+
+src=$1
+dst=$2
+
+xrdcp --server -s $TCPstreamOpts $src - | xrdcp -s - root://$XRDXROOTD_PROXY/$dst
+```
+Do not forget to `chmod +x /etc/xrootd/xrdcp-tpc.sh`.
+
