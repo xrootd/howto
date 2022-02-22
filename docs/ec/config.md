@@ -14,7 +14,7 @@ Xrootd clients that directly facing the backend storage will need to load the EC
 library. The clients include adminsitrative tools `xrdcp/xrdfs/xrootdfs` and user 
 facing xrootd proxy. To enable EC in xrootd clients:
 
-1. use a xrootd release that includes `libXrdEC.so`.
+1. use a xrootd release that includes `libXrdEC.so` (likely xrootd 5.4.1).
 2. create a file /etc/xrootd/client.plugins.d/xrdec.conf and put the following in
    this file:
 ```
