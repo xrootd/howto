@@ -42,5 +42,5 @@ The extension of the file must be **.conf**.
 
 In addition to the requirement in the [Enabling EC in xrootd clients](#enable-ec-in-xrootd-clients) 
 section, please refers to the 
-[WLCG TPC example configuration](../../tpc/#an-example-of-wlcg-tpc-configuration-with-x509-authentication)
+[WLCG TPC example configuration](/tpc/#an-example-of-wlcg-tpc-configuration-with-x509-authentication)
 document for xrootd proxy (DTN) configuration.
