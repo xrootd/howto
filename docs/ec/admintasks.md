@@ -40,31 +40,31 @@ is stored on one of file systems/disks on that server.
 
 Let's first look at the scenario when a disk fails. Suppose a server has:
 
-* two disks `/dev/sda` and `/dev/sdb` mounted at `/disk/dA` and `/disk/dB`
+* two disks `/dev/sda` and `/dev/sdb` mounted at `/disk/sda` and `/disk/sdb`
 * The likely xrootd configuration file will have the following lines:
 
 ```
 all.export /data
-oss.space public /disk/dA
-oss.space public /disk/dB
+oss.space public /disk/sda
+oss.space public /disk/sdb
 ```
 In this case, `/data` hosts the name space of all (zip) files storage on 
-this server.  under `/data` is the full directory tree containing symlinks. 
-The symlinks point to actual files in `/disk/dA` and `/disk/dB`. for example 
+this server.  Under `/data` is the full directory tree containing symlinks. 
+The symlinks point to actual files in `/disk/sda` and `/disk/sdb`. For example 
 ```
-/data/dir1/file1 -> /disk/dB/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
+/data/dir1/file1 -> /disk/sdb/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
 ```
 If `/dev/sdb` fails, one can identify all files under `/data` which are symlinks
-to `/disk/dB`. These files will need to be repaired. 
+to `/disk/sdb`. These files will need to be repaired. 
 
 What if `/data` is lost? if we:
 ```
-$ getfattr -n user.XrdFrm.Pfn /disk/dB/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
+$ getfattr -n user.XrdFrm.Pfn /disk/sdb/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
 getfattr: Removing leading '/' from absolute path names
-# file: disk/dB/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
+# file: disk/sdb/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
 user.XrdFrm.Pfn="/data/dir1/file1"
 ```
-By going through all files in `/disk/dA` and `/disk/dB`, we can reconstruct the 
+By going through all files in `/disk/sda` and `/disk/sdb`, we can reconstruct the 
 directory tree under `/data`.
 
 #### Identify damaged files due to a server failure
@@ -82,7 +82,7 @@ With a list of files to be repaired in hand, one can now start the repair
 procedure. This procedure can be summarized as the following steps:
 
 1. identity the files that need to be repaired
-2. copy each file to a new name e.e. `myfile.new`
+2. copy each file to a new name e.g. `myfile.new`
 3. (optionally) compare the checksum of the old and new files
 4. delete the old file
 5. rename the new file to the old name
