@@ -9,8 +9,8 @@ as them maintain and reuse network connections.
 
 ### What to expect when failures happen
 
-When a data server goes down, all files with zip strips on that server
-will more or less be effected. When a disk (real or raided disk) fails, 
+When a data server goes down, all files with corresponding zip files on that
+server will more or less be effected. When a disk (real or raided disk) fails, 
 all files on the disk will more or less be effected. Base on our observation,
 the impact for read and write are different:
 
@@ -31,10 +31,12 @@ the impact for read and write are different:
 
 ### How to identify and repair damaged files
 
-Damaged file here referes to files that lost a zip strips due to disk or
+Damaged file here referes to files that lost a zip file due to disk or
 data server failure. Note that if a EC is configured as `n + m`, then each 
-server will at most host one of this `n + m` zip stripes. This zip file
+server will at most host one of this `n + m` zip file. This zip file
 is stored on one of file systems/disks on that server.
+
+A damaged file is still available because there is still `n + m -1` zip files.
 
 #### Identify damaged files due to a disk failure
 
@@ -74,7 +76,7 @@ is becasue the operation can continue without this failed server. And if the
 server failure is not due to disk failuer, no data are lost.
 
 In the rare case when the server and its disks are all lost, one will need to
-check all files on other servers, and see which files are missing a zip stripe.
+check all files on other servers, and see which files are missing a zip file.
 
 #### Repair damaged files
 

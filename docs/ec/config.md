@@ -1,16 +1,19 @@
 ### The backend xrootd storage cluster
 
-Since the backend xrootd cluster isn't aware of EC, there is no extra xrootd 
+Since the backend xrootd cluster isn't aware of EC, there is no extra, EC related 
+xrootd 
 configuration other than setting up a plain xrootd cluster using a relatively new
-xrootd release (e.g. xrootd 5.3.0+) . There is a few things to consider for HW 
-configuration:
+xrootd release (e.g. xrootd 5.3.0+) . There is a few things to consider:
 
 1. The xrootd cluster needs at least ** n + m ** data servers.
-2. EC already provides data redundancy. This reduces the need of using RAID. If
+1. The file systems used by the xrootd storage cluster needs to support extended 
+   attributes.
+1. EC already provides data redundancy. This reduces the need of using RAID. If
    RAID is not used, one can xrootd's 
    [`oss.space` directive](https://xrootd.slac.stanford.edu/doc/dev54/ofs_config.htm#_Toc89982407)
    to make indivudual filesystems available in xrootd. This method actually
-   provides an extra benefit when identifying miss files due to hardware failure.
+   provides [an extra benefit when identifying damaged files](#identify-damaged-files-due-to-a-disk-failure)
+   due to hardware failure.
 
 ### Enabling EC in xrootd clients
 
