@@ -33,10 +33,11 @@ the impact for read and write are different:
 
 Damaged file here referes to files that lost a zip file due to disk or
 data server failure. Note that if a EC is configured as `n + m`, then each 
-server will at most host one of this `n + m` zip file. This zip file
+server will at most host one of those `n + m` zip file. This zip file
 is stored on one of file systems/disks on that server.
 
-A damaged file is still available because there is still `n + m -1` zip files.
+A damaged file has a degradated level of protection. But it is still available 
+because there is still `n + m -1` corresponding zip files.
 
 #### Identify damaged files due to a disk failure
 
@@ -113,7 +114,8 @@ describe how to use `xrootdfs` for repairing.
 ### Identify debris left behind
 
 This happens when a data server is offline while a file was deleted, and the 
-file was copied back later. XrdEC will automatically ignore these "debris". 
+file was copied back later. XrdEC will automatically ignore these "debris" (zip
+files). 
 
 **XrdEC SHOULD print out them for cleaning**: more on this later
 
