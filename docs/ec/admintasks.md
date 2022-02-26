@@ -55,7 +55,7 @@ The symlinks point to actual files in `/disk/dA` and `/disk/dB`. for example
 /data/dir1/file1 -> /disk/dB/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
 ```
 If `/dev/sdb` fails, one can identify all files under `/data` which are symlinks
-to `/disk/dB`. These files will need to be recovered. 
+to `/disk/dB`. These files will need to be repaired. 
 
 What if `/data` is lost? if we:
 ```
@@ -65,7 +65,7 @@ getfattr: Removing leading '/' from absolute path names
 user.XrdFrm.Pfn="/data/dir1/file1"
 ```
 By going through all files in `/disk/dA` and `/disk/dB`, we can reconstruct the 
-directory tree unde `/data`.
+directory tree under `/data`.
 
 #### Identify damaged files due to a server failure
 
@@ -76,14 +76,14 @@ server failure is not due to disk failuer, no data are lost.
 In the rare case when the server and its disks are all lost, one will need to
 check all files on other servers, and see which files are missing a zip stripe.
 
-#### Recover damaged files
+#### Repair damaged files
 
-With a list of files to be recovered in hand, one can now start the recovery 
+With a list of files to be repaired in hand, one can now start the repair 
 procedure. This procedure can be summarized as the following steps:
 
 1. identity the files that need to be repaired
 2. copy each file to a new name e.e. `myfile.new`
-3. (optionally) compair the checksum of the old and new files
+3. (optionally) compare the checksum of the old and new files
 4. delete the old file
 5. rename the new file to the old name
 
@@ -91,19 +91,28 @@ There are many ways and tools to that can be used for the procedure. The followi
 describe how to use `xrootdfs` for repairing.
 
   * mount the EC storage via `xrootdfs` in an host: e.g. 
-    `xrootdfs /data -o nworkers=20 -o rdr=root://my_redirector//data `
+    `xrootdfs /data -o nworkers=20 -o rdr=root://my_redirector//data -o direct_io`
     - Make sure that the XrdEC configuration file in the 
       [Enabling EC in xrootd clients](#enabling-ec-in-xrootd-clients) is availble.
       The best way to check is to see if you get the correct size of a file in the 
       `xrootdfs` mounted directory tree.
     - If you have 20 data servers, give 20 or a little more to `nworkers`
 
-  * Copying file. It is suggested to use the following command for copying:
-    `dd if=myfile of=myfile.new bs=1M iflag=direct oflag=direct`. Other methods
-    may work but maybe significantly slower.
+  * Copying file. Use the following command for copying:
+    `dd if=myfile of=myfile.new bs=1M iflag=direct oflag=direct`. 
   * (optional) valide the the checksum. Usually existing files already have 
-    some kind of checksum calculated and stored. For example, if the system 
-    use adler32 checksum, one can use the [`/etc/xrootd/xrdadler32.sh`](#configuring-a-xrootd-proxy-using-ec)
-    `myfile` and
-    `/etc/xrootd/xrdadler32.sh myfile.new` to valid the checksum.
+    some kind of checksum calculated and stored. For example, if adler32 is used, 
+    one can use [`/etc/xrootd/xrdadler32.sh`](#configuring-a-xrootd-proxy-using-ec)
+    `myfile` and `/etc/xrootd/xrdadler32.sh myfile.new` to valid the checksum.
   * use 'rm' and 'mv' to delete the old file and rename the new file.
+
+### Identify debris left behind
+
+This happens when a data server is offline while a file was deleted, and the 
+file was copied back later. XrdEC will automatically ignore these "debris". 
+
+**XrdEC SHOULD print out them for cleaning**: more on this later
+
+### Identify new files for backup
+
+**XrdEC SHOULD log all newly create files**: more on this later
