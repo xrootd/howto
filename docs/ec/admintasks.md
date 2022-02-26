@@ -98,8 +98,10 @@ describe how to use `xrootdfs` for repairing.
       `xrootdfs` mounted directory tree.
     - If you have 20 data servers, give 20 or a little more to `nworkers`
 
-  * Copying file. Use the following command for copying:
-    `dd if=myfile of=myfile.new bs=1M iflag=direct oflag=direct`. 
+  * Copying file. One can use any unix command for copying, for example:
+    `dd if=myfile of=myfile.new bs=1M iflag=direct oflag=direct`. Copying tools
+    that utilize direct IO for input and output, and large block size will perform 
+    better. 
   * (optional) valide the the checksum. Usually existing files already have 
     some kind of checksum calculated and stored. For example, if adler32 is used, 
     one can use [`/etc/xrootd/xrdadler32.sh`](#configuring-a-xrootd-proxy-using-ec)
