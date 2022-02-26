@@ -47,8 +47,23 @@ The extension of the file must be **.conf**.
 In addition to the requirement in the [Enabling EC in xrootd clients](#enable-ec-in-xrootd-clients) 
 section, please refers to the 
 [WLCG TPC example configuration](../tpc/#an-example-of-wlcg-tpc-configuration-with-x509-authentication)
-document for xrootd proxy (DTN) configuration. On the proxy server, an external checksum script
-is needed (using the following directive in xrootd configuration file).
+document for xrootd proxy (DTN) configuration. For EC work (and perform well), some minor 
+change to the configuration is needed:
+
+1. Xrootd client's default parameters are tunned with WAN in mind. Since the xrootd proxy
+   and EC storage will likely be on the same LAN, we suggest adding the following 
+   configuration lines to the end:
+```
+setenv XRD_TIMEOUTRESOLUTION = 15
+setenv XRD_CONNECTIONWINDOW = 15
+setenv XRD_CONNECTIONRETRY = 2
+setenv XRD_REQUESTTIMEOUT = 120
+setenv XRD_STREAMERRORWINDOW = 0
+
+```
+2. On the proxy server, an external checksum script and xrootd TPC script are needed 
+   (examples below). To use a external checksum script, use the following directive 
+   in xrootd configuration file.
 ```
 xrootd.chksum adler32 /etc/xrootd/xrdadler32.sh
 ```
