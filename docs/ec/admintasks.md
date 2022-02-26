@@ -60,7 +60,9 @@ The symlinks point to actual files in `/disk/sda` and `/disk/sdb`. For example
 If `/dev/sdb` fails, one can identify all files under `/data` which are symlinks
 to `/disk/sdb`. These files will need to be repaired. 
 
-What if `/data` is lost? if we:
+If `/data` is lost, we can recover the name space in `/data` because
+each file in `/disk/sda` and `/disk/sdb` actually stores in its extended 
+attribute the info of where it belongs to in the name space.
 ```
 $ getfattr -n user.XrdFrm.Pfn /disk/sdb/public/DA/CA64DA61306C00000000864f8117DA9200000A6%
 getfattr: Removing leading '/' from absolute path names
