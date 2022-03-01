@@ -7,6 +7,29 @@ short period of time. Some network switches may view this as a DoS attack.
 On the other hand, this is not a problem with xrootd proxy or `xrootdfs`
 as them maintain and reuse network connections.
 
+### Patch or upgrade the EC cluster
+
+If restart is needed after patching, or if a new xrootd version is needed,
+follow the procedure below:
+
+  1. Restarting a backend redirector or frontend proxy redirector will 
+     cause new connections to freeze for a while until the redirector is 
+     back. There is no other impact.
+  1. To restart a backend data server, first stop the `cmsd` service running
+     on the node. Waiting until there is no activities in `xrootd` service 
+     (e.g. no TPC connections). then stop the `xrootd` service. Bring both 
+     services back afterward.
+    * At most `m` number of data servers can be brought offline at the same
+      time.
+    * The more data servers are brought offline at the same time, the less 
+      protect during that period.
+    * If there is a `xrootdfs` mounting the backend cluster, avoid using 
+      the `xrootdfs` instance during these period. At the minimum, send a
+      `SIGUSR1` to the `xrootdfs` process after bring down and bring up the
+      `cmsd` on the data servers.
+  1. Similarly, once can use the above procedure for proxy servers in the
+     proxy cluster.
+
 ### What to expect when failures happen
 
 When a data server goes down, all files with corresponding zip files on that
