@@ -10,7 +10,8 @@ On CentOS 7, the following rpms are needed to compile Xrootd. Some are available
 * yum install -y expect perl policycoreutils selinux-policy
 * yum install -y readline-devel libxml2-devel python-devel python3-devel
 * yum install -y curl libcurl-devel libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
-* yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel
+* yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel 
+* yum install -y scitokens-cpp scitokens-cpp-devel
 * yum install -y git cmake cmake3 make gcc gcc-c++
 * yum install -y autoconf automake libtool yasm help2man 
 * yum install -y centos-release-scl

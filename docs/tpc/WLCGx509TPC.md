@@ -44,7 +44,7 @@ If there is only a single node, it is either a `server` or a `proxy server`.
     - `DTN` vs `local posix file system` vs `share posix file system`
     - a single TPC node or a cluster.  
   1. Use X509/VOMS for authentication and authorization
-  1. Support HTTP TPC via the macaroon tokens
+  1. Support HTTP TPC via the macaroon tokens and SciTokens
   1. Support Xrootd TPC via X509 proxy delegation
 
 ### Requirements
@@ -52,7 +52,7 @@ If there is only a single node, it is either a `server` or a `proxy server`.
 files should be owned by user xrootd (or equivalent). 
 1. CA certificates (default /etc/grid-security/certificates)
 1. voms certificates (default /etc/grid-security/vomsdir)
-1. RPMs: xrootd xrootd-voms voms libmacaroons (and their dependences). Other RPMs may also be required.
+1. RPMs: xrootd xrootd-voms voms libmacaroons scitokens-cpp (and their dependences). Other RPMs may also be required.
 1. (optional) TCmalloc (gperftools-libs) or JEmalloc (jemalloc) may provide better memory management for xrootd.
 
 One may also need to set nproc >= 8192 and nofile >= 8192 in /etc/security/limits.d if the systems
@@ -156,7 +156,9 @@ all.sitename MYSITE
 http.exthandler xrdtpc libXrdHttpTPC.so
 http.exthandler xrdmacaroons libXrdMacaroons.so
 macaroons.secretkey /etc/xrootd/macaroon-secret
-ofs.authlib libXrdMacaroons.so
+# order of the following two lines is important
+ofs.authlib ++ libXrdAccSciTokens.so config=/etc/xrootd/scitokens.cfg
+ofs.authlib ++ libXrdMacaroons.so
 ```
 
 ### An example `xrdcp-tpc.sh` 
@@ -184,6 +186,22 @@ dst=$2
 xrdcp --server $TCPstreamOpts -f $src root://$XRDXROOTD_PROXY/${dst}
 ```
 
+### SciToken config file `/etc/xrootd/scitokens.cfg`
+The following example support tokens issued by the WLCG Indigo IAM. 
+```
+[Global]
+onmissing = passthrough
+
+[Issuer WLCG IAM]
+issuer = https://wlcg.cloud.cnaf.infn.it/
+base_path = /xrootd
+map_subject = false
+default_user = xrootd
+```
+Please refers to page [Token-based AuthN/Z for WLCG](https://wlcg-authz-wg.github.io/wlcg-authz-docs/)
+for more info about this config file (and next config file below), VO specific IAMs 
+and how to obtain a WLCG JWT token. 
+
 ### The access control file `/etc/xrootd/auth_file`:
 ```
 = atlasprod o: atlas g: /atlas r: production
@@ -191,6 +209,9 @@ x atlasprod /dir1 rwildn
 g /atlas /dir1 rl
 g /cms /dir2 rl
 g /dteam /dir1 rwild /dir2 rwild
+# authz based on WLCG JWT token
+= wlcgtknusr o: https://wlcg.cloud.cnaf.infn.it/ g: /wlcg
+x wlcgtknusr /xrootd a
 ```
 1. line 1: define a special compound id "atlasprod" to identify all users within ATLAS VO with "/atlas/Role=production".
 1. line 2: grant this "atasprod" access permission 'rwildn'
