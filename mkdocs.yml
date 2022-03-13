@@ -7,8 +7,8 @@ plugins:
       min_search_length: 2
 nav:
     - 'About': README.md
-    - 'Compile xrootd': Compile.md
-    - '3rd Party Copy': tpc/README.md
+    - 'Compile Xrootd on CentOS': Compile.md
+    - '3rd Party Copy for Posix, Xrootd and S3 Storage': tpc/README.md
     - 'Erasure Coding': ec/README.md
 theme: 
   name: readthedocs
