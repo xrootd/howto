@@ -136,6 +136,30 @@ describe how to use `xrootdfs` for repairing.
     `myfile` and `/etc/xrootd/xrdadler32.sh myfile.new` to valid the checksum.
   * use 'rm' and 'mv' to delete the old file and rename the new file.
 
+The following script will automate the above steps. It takes a to be repaired file
+(on xrootdfs), and repair its
+```
+$ cat repair.sh
+#!/bin/sh
+
+file=$1
+CKSM="/etc/xrootd/xrdadler32.sh"  # this is the checksum script mentioned above
+nfile="${file}.newcopy"
+dd if=$file of=$nfile bs=1M iflag=direct oflag=direct >/dev/null 2>&1
+srccksm=$($CKSM $file)
+dstcksm=$($CKSM $nfile)
+if [ "$srccksm" == "$dstcksm" ]; then
+  echo [O] $file
+  rm $file
+  mv $nfile $file
+  exit
+else
+  echo [X] $file
+  rm $nfile
+  exit 1
+fi
+```
+
 ### Identify debris left behind
 
 This happens when a data server is offline while a file was deleted, and the 

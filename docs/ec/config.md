@@ -113,7 +113,7 @@ for h in $(xrdfs $XRDXROOTD_PROXY locate -h "*" | awk '{print $1}'); do
 done
 
 if [ -z "$cksm" ]; then
-    cksm=$(xrdcp -C ${cksmtype}:print -s -f root://$XRDXROOTD_PROXY/$1 /dev/null 2>&1 | \
+    cksm=$(xrdcp -C ${cksmtype}:print -s -f root://$XRDXROOTD_PROXY/$file /dev/null 2>&1 | \
          head -1 | \
          awk '{printf("%8s",$2)}' | \
          sed -e 's/\ /0/g')
