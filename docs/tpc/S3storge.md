@@ -83,9 +83,9 @@ to run may take a second or two. If this is too slow, one can use `davix-put`. H
 This plugin is available from the EPEL repo as the 'xrdcl-http' rpm. The following is for those who 
 needs the lastest updates that is not available in the rpm. This is no common.
 
-The `XrdClHttp` plugin (`libXrdClHttp-5.so` or `libXrdClHttp.so`) is so far not available in xrootd
-rpms. One needs to [compile xrootd](../Compile) to create this plugin `.so`. After this plugin is
-created, copy it to /usr/lib64 and then run `chrpath -d /usr/libi64/libXrdClHttp.so`.
+If the latest feature in the `XrdClHttp` plugin (`libXrdClHttp-5.so` or `libXrdClHttp.so`) is not 
+available in the above rpm, one will need to [compile xrootd](../Compile) to create this plugin.
+After that copy the `.so` to /usr/lib64 and then run `chrpath -d /usr/libi64/libXrdClHttp.so`.
 
 To instruction xrootd to load this plugin, create `/etc/xrootd/client.plugins.d/xrdcl-http-plugin.conf`
 with the following lines inside:
