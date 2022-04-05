@@ -27,7 +27,7 @@ with the following additional configurations:
     - The default space is /tmp. It can be changed by unix environment variable 
       **DAVIX_STAGING_AREA**
   * xrootd needs the XrdClHttp plugin and configuration to load the plugin. The rpm for this
-    plugin is available in EPEL as `xrdcl-http`
+    plugin (and the configuration file) is available in EPEL as `xrdcl-http`
   * Install the Davix rpm (available from EPEL).
 
 ### Checksum and an example /etc/xrootd/xrdadler32.sh
