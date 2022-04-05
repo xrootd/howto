@@ -22,12 +22,13 @@ with the following additional configurations:
     ```
     xrootd.chksum max 32 adler32 /etc/xrootd/xrdadler32.sh
     ``` 
-  * Install the Davix rpm (available from EPEL).
   * A staging space. When writing to s3 storage, Davix temporarily stores a complete file 
     to this staging area before it uploads the file to the s3 storage.
     - The default space is /tmp. It can be changed by unix environment variable 
       **DAVIX_STAGING_AREA**
-  * xrootd needs the XrdClHttp plugin and configuration to load the plugin.
+  * xrootd needs the XrdClHttp plugin and configuration to load the plugin. The rpm for this
+    plugin is available in EPEL as `xrdcl-http`
+  * Install the Davix rpm (available from EPEL).
 
 ### Checksum and an example /etc/xrootd/xrdadler32.sh
 
