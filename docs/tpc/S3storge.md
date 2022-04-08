@@ -11,12 +11,20 @@ Configuring xrootd in this use case is largely based on  the
 with the following additional configurations:
 
   * S3 object store uses the word **bucket** for what we usually called **directory**.
-  * Change to the configuration file (the `server` / `proxy serve` section in the `else` clause) <p>
-  ```
-  pss.origin https://s3store.xyz:port
-  setenv AWS_ACCESS_KEY_ID = GOOGS4MV4PQTK3D4G0LB34AN
-  setenv AWS_SECRET_ACCESS_KEY = QtUMprl2j07m4VfzygcjJQlVrvO9ZfU+eKDbR2sP
-  ```
+  * Change to the configuration file (the `server` / `proxy serve` section in the `else` clause)
+
+    ```
+    pss.origin https://s3store.xyz:port
+    setenv AWS_ACCESS_KEY_ID = GOOGS4MV4PQTK3D4G0LB34AN
+    setenv AWS_SECRET_ACCESS_KEY = QtUMprl2j07m4VfzygcjJQlVrvO9ZfU+eKDbR2sP
+    ```
+
+    (Note that to demostrate the idea, we leave the credentials in the xrootd config file. 
+    <b>This is not a good security practice</b>. `setenv` directive allows 
+    [putting these credentials in files](https://xrootd.slac.stanford.edu/doc/dev55/Syntax_config.htm#_Toc520499869).
+    The variables set by `setenv` are Unix environment variables so they can also be set
+    accordingly before xrootd starts.)
+
   * xrootd will use scripts for checksum and xrootd TPC (examples below).
     - in the `else` clause of the configuration file, change the adler32 line to <p>
     ```
