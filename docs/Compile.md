@@ -15,7 +15,7 @@ On CentOS 7, the following rpms are needed to compile Xrootd. Some are available
 * yum install -y git cmake cmake3 make gcc gcc-c++
 * yum install -y autoconf automake libtool yasm help2man 
 * yum install -y centos-release-scl
-* yum install -y devtoolset-7
+* yum install -y devtoolset-9
 
 On CentOS 8, the following rpms are needed to compile Xrotod. Some are available from EPEL.
 
