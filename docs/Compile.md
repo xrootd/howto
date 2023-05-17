@@ -15,7 +15,7 @@ On CentOS 7, the following rpms are needed to compile Xrootd. Some are available
 * yum install -y git cmake cmake3 make gcc gcc-c++
 * yum install -y autoconf automake libtool yasm help2man 
 * yum install -y centos-release-scl
-* yum install -y devtoolset-9
+* yum install -y devtoolset-7
 
 On CentOS 8, the following rpms are needed to compile Xrotod. Some are available from EPEL.
 
@@ -72,7 +72,7 @@ Add the following option to cmake3 if you need to:
 
 * support VOMS: `-DENABLE_VOMS=True`
 * support HTTP TPC: `-DENABLE_VOMS=True -DBUILD_MACAROONS=1`
-* support XrdClHTTP: `-DXRDCLHTTP_SUBMODULE=1`
+* support XrdClHTTP: `-DXRDCLHTTP_SUBMODULE=1` (built by default, no longer needed)
 * support Erasure Coding: `-DENABLE_XRDEC=True`
 * support ASAN (CentOS 8 only): `-DENABLE_ASAN=True`
 
