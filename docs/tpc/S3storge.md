@@ -54,7 +54,7 @@ the file from the s3 storage. There are two drawbacks:
 
 * no place to store the ckecksum
 * may incure Egress charge if the s3 store is in a commercial cloud, e.g. 
-  [Google using HMAC key](https://cloud.google.com/storage/docs/authentication/hmackeys)
+  [Google (using HMAC key)](https://cloud.google.com/storage/docs/authentication/hmackeys)
   or AWS, but xrootd runs outside of the cloud.
 
 ### An example /etc/xrootd/xrdcp-tpc.sh
