@@ -1,7 +1,12 @@
 version: 2
 
+build:
+  os: rockylinux:9
+  tools:
+    python: "3.9"
+
 python:
-   version: 3.8
+   version: 3.9
    install:
    - requirements: requirements.txt
 
