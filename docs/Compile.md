@@ -4,29 +4,6 @@ Make sure your environment does not have xrootd rpms installed.
 
 ## Environment requirement
 
-On CentOS 7, the following rpms are needed to compile Xrootd. Some are available from EPEL.
-
-* yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-* yum install -y expect perl policycoreutils selinux-policy
-* yum install -y readline-devel libxml2-devel python-devel python3-devel
-* yum install -y curl libcurl-devel libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
-* yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel 
-* yum install -y scitokens-cpp scitokens-cpp-devel
-* yum install -y git cmake cmake3 make gcc gcc-c++
-* yum install -y autoconf automake libtool yasm help2man 
-* yum install -y centos-release-scl
-* yum install -y devtoolset-7
-
-On CentOS 8, the following rpms are needed to compile Xrootd. Some are available from EPEL.
-
-* yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-* yum install -y expect perl policycoreutils selinux-policy 
-* yum install -y readline-devel libxml2-devel python2-devel python39-devel
-* yum install -y curl libcurl-devel libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
-* yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel
-* yum install -y git cmake cmake3 make gcc gcc-c++ 
-* yum install -y autoconf automake libtool libasan
-
 Build an AlmaLinux 9 container to compile Xrootd, tested on Rocky Linux 8 (*experimental*)
 
 ```
@@ -59,6 +36,29 @@ From: almalinux:9
 
 %runscript
 ```
+
+On CentOS 8, the following rpms are needed to compile Xrootd. Some are available from EPEL.
+
+* yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+* yum install -y expect perl policycoreutils selinux-policy 
+* yum install -y readline-devel libxml2-devel python2-devel python39-devel
+* yum install -y curl libcurl-devel libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
+* yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel
+* yum install -y git cmake cmake3 make gcc gcc-c++ 
+* yum install -y autoconf automake libtool libasan
+
+On CentOS 7, the following rpms are needed to compile Xrootd. Some are available from EPEL.
+
+* yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+* yum install -y expect perl policycoreutils selinux-policy
+* yum install -y readline-devel libxml2-devel python-devel python3-devel
+* yum install -y curl libcurl-devel libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
+* yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel 
+* yum install -y scitokens-cpp scitokens-cpp-devel
+* yum install -y git cmake cmake3 make gcc gcc-c++
+* yum install -y autoconf automake libtool yasm help2man 
+* yum install -y centos-release-scl
+* yum install -y devtoolset-7
 
 ## Instruction to compile xrootd
 
