@@ -17,7 +17,7 @@ On CentOS 7, the following rpms are needed to compile Xrootd. Some are available
 * yum install -y centos-release-scl
 * yum install -y devtoolset-7
 
-On CentOS 8, the following rpms are needed to compile Xrotod. Some are available from EPEL.
+On CentOS 8, the following rpms are needed to compile Xrootd. Some are available from EPEL.
 
 * yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 * yum install -y expect perl policycoreutils selinux-policy 
@@ -26,6 +26,39 @@ On CentOS 8, the following rpms are needed to compile Xrotod. Some are available
 * yum install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel
 * yum install -y git cmake cmake3 make gcc gcc-c++ 
 * yum install -y autoconf automake libtool libasan
+
+Build an AlmaLinux 9 container to compile Xrootd, tested on Rocky Linux 8 (*experimental*)
+
+```
+# save this file as xrdbld.almalinux9.def
+  
+# How to build apptainer image (sif and sandbox) as non-root user:
+# 1. build a .sif image
+#   apptainer build xrdbld.$(date +%Y%m%d).almalinux9.sif xrdbld.almalinux9.def
+# 2. build sandbox (expanded directory)
+#   2.1 check your uid/gid are in /etc/subuid and /etc/subgid
+#   2.2 apptainer build --fakeroot xrdbld.$(date +%Y%m%d).almalinux9 xrdbld.almalinux9.def
+# 3. modify sandbox (install other rpms)
+#   apptainer shell --fakeroot -w xrdbld.$(date +%Y%m%d).almalinux9
+
+BootStrap: docker
+From: almalinux:9
+
+%setup
+
+%post
+  dnf config-manager --set-enabled crb
+  dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+  dnf install -y expect perl policycoreutils selinux-policy
+  dnf install -y readline-devel libxml2-devel python3-devel
+ #dnf install -y curl libcurl-devel
+  dnf install -y libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
+  dnf install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel
+  dnf install -y git cmake cmake3 make gcc gcc-c++
+  dnf install -y autoconf automake libtool libasan
+
+%runscript
+```
 
 ## Instruction to compile xrootd
 
