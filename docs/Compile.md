@@ -34,6 +34,11 @@ From: almalinux:9
   dnf install -y git cmake cmake3 make gcc gcc-c++
   dnf install -y autoconf automake libtool libasan
 
+ #dnf install -y gfal2-util-scripts gfal2-python3 gfal2-plugin-file gfal2-plugin-http python3-gfal2-util
+ #dnf install -y fts-rest-cli 
+ #python3 -m pip install -U pip
+ #pip3 install rucio-clients
+
 %runscript
 ```
 
