@@ -40,6 +40,9 @@ From: almalinux:9
  #python3 -m pip install -U pip
  #pip3 install rucio-clients
 
+  dnf update -y
+  dnf clean all
+
 %runscript
 ```
 
