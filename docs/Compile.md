@@ -4,7 +4,7 @@ Make sure your environment does not have xrootd rpms installed.
 
 ## Environment requirement
 
-Build an AlmaLinux 9 container to compile Xrootd, tested on Rocky Linux 8 (*experimental*)
+Build an AlmaLinux 9 Apptainer container to compile Xrootd, tested on Rocky Linux 8 (*experimental*)
 
 ```
 # save this file as xrdbld.almalinux9.def
@@ -24,6 +24,7 @@ From: almalinux:9
 %setup
 
 %post
+  dnf install -y 'dnf-command(config-manager)'
   dnf config-manager --set-enabled crb
   dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
   dnf install -y expect perl policycoreutils selinux-policy
