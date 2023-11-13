@@ -33,7 +33,7 @@ From: almalinux:9
   dnf install -y libmacaroons libmacaroons-devel json-c json-c-devel uuid libuuid-devel
   dnf install -y openssl-devel davix-libs davix-devel voms voms-devel fuse fuse-devel
   dnf install -y scitokens-cpp scitokens-cpp-devel
-  dnf install -y git cmake cmake3 make gcc gcc-c++
+  dnf install -y git cmake cmake3 make gcc gcc-c++ gdb
   dnf install -y autoconf automake libtool libasan
 
  #dnf install -y gfal2-util-scripts gfal2-python3 gfal2-plugin-file gfal2-plugin-http python3-gfal2-util
