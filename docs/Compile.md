@@ -14,7 +14,7 @@ Build an AlmaLinux 9 Apptainer container to compile Xrootd, tested on Rocky Linu
 #   apptainer build xrdbld.$(date +%Y%m%d).almalinux9.sif xrdbld.almalinux9.def
 # 2. build sandbox (expanded directory)
 #   2.1 check your uid/gid are in /etc/subuid and /etc/subgid
-#   2.2 apptainer build --fakeroot xrdbld.$(date +%Y%m%d).almalinux9 xrdbld.almalinux9.def
+#   2.2 apptainer build --fakeroot --sandbox xrdbld.$(date +%Y%m%d).almalinux9 xrdbld.almalinux9.def
 # 3. modify sandbox (install other rpms)
 #   apptainer shell --fakeroot -w xrdbld.$(date +%Y%m%d).almalinux9
 
