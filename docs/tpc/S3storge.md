@@ -25,6 +25,11 @@ with the following additional configurations:
     The variables set by `setenv` are Unix environment variables so they can also be set
     accordingly before xrootd starts.)
 
+  * Disabling Davix session caching to prevent memory leak and fragmentation
+    ```
+    setenv DAVIX_DISABLE_SESSION_CACHING = 1
+    ```
+
   * xrootd will use scripts for checksum and xrootd TPC (examples below).
     - in the `else` clause of the configuration file, change the adler32 line to <p>
     ```
