@@ -1,0 +1,77 @@
+#!/bin/sh
+
+echo $@ >> /tmp/prepcmd.log
+HSI="/usr/local/bin/hsi -q -A keytab -k my.keytab -l me"
+
+# config line
+# ofs.preplib /usr/lib64/libXrdOfsPrepGPI.so -admit all -run /etc/xrootd/prepcmd.sh
+while [ "$1" != '--' ]; do
+  shift
+done
+shift
+
+# a query or cancel request coming after the staging request has a extra ']' at the end of
+# the request id (compare to the original staging request id). This is likely a bug in fts
+# because:
+# 1. we don't see this using gfal-bringonline.
+# 2. if we strip this extra ']' from the request id in the json response, then
+#    the FTS QoS daemon log will complain "Request ID mismatch".
+# 3. 2) clear shows that Xrootd preplib isn't responsible for adding this extra ']'.
+request_id=$1
+staging_id=$(echo $1 | sed -e 's/\]$//g')
+shift
+
+command=$1
+shift
+
+if [ "$command" == "evict" ]; then
+  exit 0
+elif [ "$command" == "cancel" ]; then
+  echo "cancel request ignored"
+  exit 0
+elif [ "$command" == "stage" ]; then
+  hfns=""
+  for lfn in $@; do
+    hfn="/DIR$lfn"
+    pfn="/hpssfs/DIR$lfn"
+    [ -f $pfn ] && hfns="$hfns $hfn"
+  done
+  echo "staging $hfns"
+  touch /tmp/stage.$request_id
+  $HSI stage -w $hfns  # this is a blocking operation. hasn't find a non-blocking option.
+  rm /tmp/stage.$request_id
+  exit 0
+elif [ "$command" == "query" ]; then
+  echo '{'
+  echo   \"request_id\": \"$request_id\",
+  echo   \"responses\": \[
+  for lfn in $@; do 
+    hfn="/DIR$lfn"
+    pfn="/hpssfs/DIR$lfn"
+    if [ ! -f $pfn ]; then
+      echo -n "              {\"path\": \"$lfn\", \"path_exists\": false, \"error_text\": \"\", "
+      echo "\"on_tape\": false, \"online\": false}," 
+    elif [ -f /tmp/stage.$staging_id ]; then  # This is a query for a previous staging request
+      req_time=$(stat -c %y /tmp/stage.$staging_id)
+      echo -n "              {\"path\": \"$lfn\", \"path_exists\": true, \"error_text\": \"\", "
+      echo "\"on_tape\": true, \"requested\": true, \"has_reqid\": true, \"req_time\": \"$req_time\"}," 
+    else
+      $HSI ls -X $hfn 2>&1 | grep -E '(disk)|(tape)' | \
+         awk -v lfn=$lfn \
+           'BEGIN{ndisk=0; ntape=0; online="false"; on_tape="false"}
+            {
+              if (match($2, /(disk)/) && $3 == 1) {ndisk=ndisk+1}
+              else if (match($2, /(tape)/) && $3 == 1) {ntape=ntape+1}
+            } 
+            END{
+              if (ndisk > 0) {online="true"}
+              if (ntape > 0) {on_tape="true"}
+              printf("              ");
+              printf("{\"path\": \"%s\", \"path_exists\": true, \"error_text\": \"\",", lfn);
+              printf(" \"on_tape\": %s, \"online\": %s},\n", on_tape, online)
+            }'
+    fi
+  done
+  echo ']}'
+  exit 0
+fi

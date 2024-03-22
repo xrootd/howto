@@ -10,6 +10,7 @@ nav:
     - 'Compile Xrootd on CentOS': Compile.md
     - '3rd Party Copy for Posix & Object Store': tpc/README.md
     - 'Erasure Coding': ec/README.md
+    - 'Tape Endpoint Demo' : preplib4tape/README.md
 theme: 
   name: readthedocs
   plugins: 
