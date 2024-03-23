@@ -72,9 +72,8 @@ If the file doesn't exist in HPSS, the json response should be:
 ```
 
 Note the comma before ']': since gfal-bringonline may include more than one files, the `responses` list 
-should include all of them.
-
-gfal-bringonline will not issue more query for a file if it gets a `"path_exist": false` response
+should include all of them.<p>
+gfal-bringonline will not issue more query for a file if it gets a <b>"path_exist": false</b> response.
 </li>
 <li>
 If a file exists in HPSS. but the staging is still running, the json response should be:
@@ -92,12 +91,12 @@ If a file exists in HPSS. but the staging is still running, the json response sh
 }
 ```
 
-$req_time is the time stage request started. It doesn't need to be accurate.
-
+$req_time is the time stage request started. It doesn't need to be accurate.<p>
 gfal-bringonline will wait for 2^n seconds for files that with a response like the above. n=0,1,2,3,...   
 </li>
 <li>
-If the file exists in HPSS, and the staging completed, one parse the $HSI ls -X command's output to determine if the file is on disk or on tape. The json resonse should be:
+If the file exists in HPSS, and the staging has completed, the output of the <b>hsi ls -X</b> 
+should be parsed to determine if the file is on disk or on tape. The json resonse should be:
 
 ```
 { "request_id": "$request_id",
@@ -110,9 +109,8 @@ If the file exists in HPSS, and the staging completed, one parse the $HSI ls -X 
 }
 ```
 
-"online" refers to whether the file is in disk buffer and can be accessed as a disk file.
-
-Once gfal-bringonline get a `"online":true` response, it no longer include that file in future query.
+Here "online" refers to whether the file is in disk buffer and can be accessed as a disk file.<p>
+Once gfal-bringonline get a <b>"online":true</b> response, it no longer include that file in future query.
 </li>
 </ol>
 
