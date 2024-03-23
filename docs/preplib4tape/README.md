@@ -3,7 +3,7 @@
 A prelimnary driver here shows how Xrootd interacts with both the HPSS backend and clients who 
 use the Xrootd's Prepare Interface. It is intended to be an example to demonstrate the workflow 
 when FTS transfer files in and out of a Tape Endpoint using the ***root*** protocol (also see the 
-discussion on the WLCG Tape REST API at the end). It is not expected to scale up for production
+discussion on the WLCG Tape REST API). It is not expected to scale up for production
 use.
 
 This demo driver will 
@@ -40,3 +40,90 @@ Xrootd currently does not support WLCG Tape REST API. However, as showed above, 
 provides the equivalent functionalities. A plugin to Xrootd can be developed to translate the WLCG 
 Tape REST API to Xrootd Prepare commands. With that plugin, we expect it will work with the above 
 driver.
+
+# Tech details
+
+gfal and FTS expects a json response for `query` and `stage`. The following describe the json response.
+Note the Xrootd Prepare Interface does not support HPSS `migrate`. HPSS does the migration 
+from disk buffer to tape automatically.
+
+## Json response to `stager` and `query`
+
+***gfal-bringonline*** actually issues several commands via the Xrootd Prepare Interface:
+
+- a "stage" command for one or more files.
+- gfal-bringonline does not wait for the `stage` command to finish. It immediately issue a `query` command. 
+
+Assume the file name is $lfn and request id is $request_id
+
+<ol>
+<li>
+If the file doesn't exist in HPSS, the json response should be:
+
+```
+{ "request_id": "$request_id",
+  "responses": [{"path": "$lfn", 
+                 "path_exists": false, 
+                 "error_text": "", 
+                 "on_tape": false, 
+                 "online": false},
+               ]
+}
+```
+
+Note the comma before ']': since gfal-bringonline may include more than one files, the `responses` list 
+should include all of them.
+
+gfal-bringonline will not issue more query for a file if it gets a `"path_exist": false` response
+</li>
+<li>
+If a file exists in HPSS. but the staging is still running, the json response should be:
+
+```
+{ "request_id": "$request_id",
+  "responses": [{"path": "$lfn", 
+                 "path_exists": true, 
+                 "error_text": "",
+                 "on_tape": true, 
+                 "requested": true, 
+                 "has_reqid": true, 
+                 "req_time": "$req_time"},
+               ]
+}
+```
+
+$req_time is the time stage request started. It doesn't need to be accurate.
+
+gfal-bringonline will wait for 2^n seconds for files that with a response like the above. n=0,1,2,3,...   
+</li>
+<li>
+If the file exists in HPSS, and the staging completed, one parse the $HSI ls -X command's output to determine if the file is on disk or on tape. The json resonse should be:
+
+```
+{ "request_id": "$request_id",
+  "responses": [{"path": "$lfn", 
+                 "path_exists": true, 
+                 "error_text": "",
+                 "on_tape": true(or false), 
+                 "online": true(or false},
+               ]
+}
+```
+
+"online" refers to whether the file is in disk buffer and can be accessed as a disk file.
+
+Once gfal-bringonline get a `"online":true` response, it no longer include that file in future query.
+</li>
+</ol>
+
+One tricky thing is to determine whether the staging is still running. The script uses a marker file 
+/tmp/stage.$request_id to record:
+
+- The staging request_id.
+- That the staging of that group of files is going in. When the staging is completed, the marker file 
+will be deleted.
+- The timestamp of the marker file. It is used as the time of the staging requests.
+
+## Migration to tape
+
+The response to query (above) will also info  ***gfal-archivepoll*** that a file has a copy on tape.
