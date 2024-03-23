@@ -3,7 +3,7 @@
 A prelimnary driver here shows how Xrootd interacts with both an HPSS backend and clients who 
 use the Xrootd's Prepare Interface. It is intended to be an example to demonstrate the workflow 
 when FTS transfer files in and out of a Tape Endpoint using the ***root*** protocol (also see the 
-discussion on the WLCG Tape REST API). It is not expected to scale up for production
+discussion on the ***WLCG Tape REST API*** below). It is not expected to scale up for production
 use.
 
 This demo driver will 
@@ -18,7 +18,7 @@ the example.
 
     - It assumes the HPSS storage is mounted on via HPSSFS-FUSE at /hpssfs/DIR
 
-3. Clients will use xrdfs/gfal/FTS to interact with the Xrootd endpoint
+3. Clients will use xrdfs/gfal/FTS tools to interact with the Xrootd endpoint
 
     - Use ***gfal-archivepoll*** and ***gfal-bringonline*** to trigger data migration and staging with HPSS
     - For FTS (... detail to come)
@@ -36,16 +36,19 @@ The [`prepcmd.sh`](prepcmd.sh.txt) is the driver written in Shell script.
 
 # WLCG Tape REST API
 
-Xrootd currently does not support WLCG Tape REST API. However, as showed above, Xrootd Prepare API
+Xrootd currently does not support WLCG Tape REST API. However, as showed here, the Xrootd Prepare API
 provides the equivalent functionalities. A plugin to Xrootd can be developed to translate the WLCG 
 Tape REST API to Xrootd Prepare commands. With that plugin, we expect it will work with the above 
 driver.
 
 # Tech details
 
-gfal and FTS expects a json response for `query` and `stage`. The following describe the json response.
-Note the Xrootd Prepare Interface does not support HPSS `migrate`. HPSS does the migration 
-from disk buffer to tape automatically.
+The Xrootd Prepare Interface does not support HPSS `migrate`. There is also no immediate need for such 
+a function since HPSS automatically migrate data from disk buffer to tape. All FTS and gfal need is to
+send `query` to check if the migration has completed.
+
+FTS and gfal expect json responses for `query` and `stage`. The following describe the json response
+for `stage` and `query`. 
 
 ## Json response to `stage` and `query`
 
