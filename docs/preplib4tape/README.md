@@ -47,7 +47,7 @@ gfal and FTS expects a json response for `query` and `stage`. The following desc
 Note the Xrootd Prepare Interface does not support HPSS `migrate`. HPSS does the migration 
 from disk buffer to tape automatically.
 
-## Json response to `stager` and `query`
+## Json response to `stage` and `query`
 
 ***gfal-bringonline*** actually issues several commands via the Xrootd Prepare Interface:
 
