@@ -1,6 +1,6 @@
-# Demo driver for Xrootd to interact with the HPSS
+# Demo driver for Xrootd to interact with HPSS
 
-A prelimnary driver here shows how Xrootd interacts with both the HPSS backend and clients who 
+A prelimnary driver here shows how Xrootd interacts with both an HPSS backend and clients who 
 use the Xrootd's Prepare Interface. It is intended to be an example to demonstrate the workflow 
 when FTS transfer files in and out of a Tape Endpoint using the ***root*** protocol (also see the 
 discussion on the WLCG Tape REST API). It is not expected to scale up for production
