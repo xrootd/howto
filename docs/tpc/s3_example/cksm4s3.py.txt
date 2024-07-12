@@ -1,0 +1,83 @@
+#!/usr/bin/python3
+
+# when xrootd.cfg is config like
+# 1. xrootd.chksum max 64 adler32 /etc/xrootd/cksm4s3.py
+#    then the file (with path, absent of oss.localroot) will the only parameter to be passed via $1
+# 2. xrootd.chksum chkcgi max 128 adler32 md5 /etc/xrootd/cksm4s3.py
+#    then the $@ will look like 
+#    adler32 /rubin-summit-users/u/ktl/test-10-0.png yangw.72666:25@sdf-login04 24294f21.0
+
+import os, sys, zlib
+import  boto3
+from botocore.config import Config
+import botocore.exceptions
+import urllib3
+urllib3.disable_warnings()
+
+if len(sys.argv) == 2:
+    cksmtype = 'adler32'
+    file = sys.argv[1]
+else:
+    cksmtype = sys.argv[1]
+    file = sys.argv[2]
+
+pathitems = file.split('/')
+bucket = pathitems[1]
+pathitems[0] = ''
+objkey = '/'.join(pathitems[2:])
+
+#print("Bucket : %s, Objkey : %s" % (bucket, objkey))
+
+s3 = boto3.client('s3',
+                  aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+                  aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+                  endpoint_url='https://' + os.environ['XRDXROOTD_PROXY'],
+                  verify=False,
+                  config=Config()
+                  )
+
+objectExist = 0
+try:
+    s3.head_object(Bucket=bucket, Key=objkey)
+    objectExist = 1
+except botocore.exceptions.ClientError as e:
+    if e.response['Error']['Code'] == "404":
+        print("File not found")
+    elif e.response['Error']['Code'] == 403:
+        # Unauthorized, including invalid bucket
+        print("Unauthorized Access")
+    else:
+        print("Error Accessing file" + file)
+    exit(1)
+
+tags = s3.get_object_tagging(Bucket=bucket, Key=objkey)
+if 'TagSet' in tags.keys():
+    for tag in tags['TagSet']:
+        if tag['Key'] == cksmtype:
+           print(tag['Value'])
+           exit(0)
+
+data = s3.get_object(Bucket=bucket, Key=objkey)
+f = data['Body']
+
+if cksmtype == 'adler32':
+    adler = 1
+    while True:
+      buf = f.read(amt=1024*1024*2)
+      if len(buf) == 0 :
+        break
+      else:
+        adler = zlib.adler32(buf, adler)
+    f.close()
+    if adler < 0:
+      adler = adler + 2 ** 32
+    cksm = "%08x" % adler
+    print(cksm)
+else:
+    print("%s not implemented" % cksmtype)
+    exit(1)
+
+if not 'TagSet' in tags.keys():
+    tags['TagSet'] = []
+tags['TagSet'].append({ 'Key': cksmtype, 'Value': cksm })
+s3.put_object_tagging(Bucket=bucket, Key=objkey, Tagging={ 'TagSet': tags['TagSet']})

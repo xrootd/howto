@@ -1,0 +1,23 @@
+# /etc/xrootd/scitokens.cfg
+[Global]
+onmissing = passthrough
+audience = https://wlcg.cern.ch/jwt/v1/any,dtn.slac.stanford.edu
+
+[Issuer WLCG IAM]
+issuer = https://wlcg.cloud.cnaf.infn.it/
+base_path = /xrootd/atlas
+map_subject = False
+default_user = xrootd
+
+[Issuer ATLAS]
+issuer = https://atlas-auth.web.cern.ch/
+base_path = /xrootd/atlas
+map_subject = false
+default_user = xrootd
+
+# 2024-04: New CERN IAM hosts for WLCG experiments
+[Issuer ATLASNEW]
+issuer = https://atlas-auth.cern.ch/
+base_path = /xrootd/atlas
+map_subject = False
+default_user = xrootd

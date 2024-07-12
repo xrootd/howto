@@ -10,7 +10,7 @@ Configuring xrootd in this use case is largely based on  the
 [WLCG TPC configurat example](#an-example-of-wlcg-tpc-configuration-with-x509-authentication),
 with the following additional configurations:
 
-  * S3 object store uses the word **bucket** for what we usually called **directory**.
+  * S3 object store uses the word **bucket** for what we usually called **top level directory**.
   * Change to the configuration file (the `server` / `proxy serve` section in the `else` clause)
 
     ```
@@ -39,6 +39,10 @@ with the following additional configurations:
     to this staging area before it uploads the file to the s3 storage.
     - The default space is /tmp. It can be changed by unix environment variable 
       **DAVIX_STAGING_AREA**
+    - As of Davix 0.8.7, this area is no longer needed if the following is defined:
+    ```
+    setenv DAVPOSIX_MPUPLOAD = 1
+    ```
   * xrootd needs the XrdClHttp plugin and configuration to load the plugin. The rpm for this
     plugin (and the configuration file) is available in EPEL as `xrdcl-http`
   * Install the Davix rpm (available from EPEL).
@@ -113,3 +117,45 @@ enable = true
 
 As a final note, **renaming** is poorly supported in s3 object store. For this reason, the 
 `XrdClHttp` plugin disabled renaming.
+
+### A complete example
+
+On an AlmaLinux 9 machine, one will need the following rpms:
+
+```
+expect perl policycoreutils selinux-policy logrotate libunwind graphviz gv 
+libmacaroons voms scitokens-cpp davix python3 python3-boto3
+
+xrootd xrootd-libs xrootd-server xrootd-server-libs xrootd-client xrootd-client-libs 
+xrootd-selinux xrootd-voms xrootd-scitokens xrdcl-http
+```
+
+For the `davix` rpm, make sure it is `0.8.7` or above.
+
+Host certificate should be available at `/etc/grid-security/xrd/{xrdcert.pem, xrdkey.pem}` with 
+correct owership and permission (644 and 600). `/etc/grid-security/{certificates, vomsdir}` are also 
+needed
+
+This following directory tree containers a complete example setup that usually goes to /etc/xrootd. 
+<code>
+├── etc
+│   └── xrootd
+│       ├── client.plugins.d
+│       │   └── [xrdcl-http-plugin.conf](s3_example/client.plugins.d/xrdcl-http-plugin.conf.txt)
+│       ├── [robots.txt](s3_example/robots.txt)
+│       ├── [cksm4s3.py](s3_example/cksm4s3.py.txt)
+│       ├── [xrdcp-tpc.sh](s3_example/xrdcp-tpc.sh.txt)
+│       ├── macaroon-secret: [This file needs to be created](../tpc/#generating-the-macaroon-secret)
+│       ├── [auth_file](s3_example/auth_file.txt)
+│       ├── [scitokens.cfg](s3_example/scitokens.cfg.txt)
+│       └── [xrootd.cfg](s3_example/xrootd.cfg.txt)
+</code>
+
+To start with this example, one will need to at least replace the following in the last three files:
+
+* The xrootd node name `dtn.slac.stanford.edu` (in `scitokens.cfg`)
+* The backend s3 node name `s3.slac.stanford.edu` (in `xrootd.cfg`)
+* The storage path (s3 bucket/subbucket) `/xrootd/atlas` (in all three files at the bottom)
+
+The example above uses a different xrdcp-tpc script and a different adler32 script than those in the
+previous sections.

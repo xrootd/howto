@@ -1,0 +1,60 @@
+# Note: This file container AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY. 
+# Do not share, and do not allow others to read.
+
+all.sitename MYSITE
+all.export /xrootd/atlas
+xrd.port 1094
+
+xrootd.async off
+ofs.osslib libXrdPss.so
+pss.origin https://s3.slac.stanford.edu:9443
+setenv DAVIX_DISABLE_SESSION_CACHING = 1
+setenv DAVPOSIX_MPUPLOAD = 1
+
+# It is better to set the followig Unix env vars somewhere else.
+setenv AWS_ACCESS_KEY_ID = 1hKNdOMEkCOmV8d
+setenv AWS_SECRET_ACCESS_KEY = QCRyhZsuv16Mh6rqiEnu7986fbwd6Psz
+
+xrootd.chksum max 64 adler32 /etc/xrootd/cksm4s3.py
+
+# TLS, these .pem are host certificates
+xrd.tls /etc/grid-security/xrd/xrdcert.pem /etc/grid-security/xrd/xrdkey.pem
+xrd.tlsca certdir /etc/grid-security/certificates
+xrootd.tls capable all
+
+#sec.level all compatible
+xrootd.seclib libXrdSec.so
+
+# Xrootd VOMS security
+sec.protparm gsi -vomsfun:libXrdVoms.so -vomsfunparms:dbg
+sec.protocol gsi -dlgpxy:1 -exppxy:=creds -ca:1 -crl:3 -gridmap:/dev/null
+
+# Xrootd TPC
+ofs.tpc fcreds ?gsi =X509_USER_PROXY logok autorm ttl 60 70 xfr 300 pgm /etc/xrootd/xrdcp-tpc.sh
+#ofs.tpc fcreds ?gsi =X509_USER_PROXY logok autorm ttl 60 70 xfr 300 pgm /usr/bin/xrdcp -f
+
+# HTTP Protocol
+if exec xrootd
+    xrd.protocol http libXrdHttp.so
+fi
+http.selfhttps2http no
+
+# HTTP TPC with VOMS, using Macaroons
+http.cadir /etc/grid-security/certificates
+http.staticpreload http://static/robots.txt /etc/xrootd/robots.txt
+http.secxtractor libXrdVoms.so
+# HTTP TPC, see https://twiki.cern.ch/twiki/bin/view/Main/XRootDoverHTTP#Enable_Third_Party_Copy
+http.exthandler xrdtpc libXrdHttpTPC.so
+http.header2cgi Authorization authz
+# Macaroons support, see: https://twiki.cern.ch/twiki/bin/view/Main/XRootDoverHTTP#Macaroons_Support
+http.exthandler xrdmacaroons libXrdMacaroons.so
+macaroons.secretkey /etc/xrootd/macaroon-secret
+macaroons.maxduration 604800
+ofs.authlib libXrdMacaroons.so
+# Attempt to fix timeout issues for WebDAV transfers.
+#xrd.timeout hail 30 idle 0 kill 10 read 30
+
+acc.audit deny
+acc.authdb /etc/xrootd/auth_file
+acc.authrefresh 60
+ofs.authorize 1

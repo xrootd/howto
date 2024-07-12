@@ -1,0 +1,16 @@
+# Compound ID "altprod" referes to VOMS attribute atlas:/atlas/Role=production
+= atlprod o: atlas g: /atlas r: production
+x atlprod /xrootd/atlas rwildn /xrootd/others rwlidn
+
+# Anyone with at least atlas:/atlas
+o atlas /xrootd/atlas rwildn
+
+# WLCG/SciToken issued with "group" attributes (not using scopes)
+= atlastknprod o: https://atlas-auth.web.cern.ch/ g: /atlas/production
+x atlastknprod /xrootd/atlas rwildn
+= atlastknuser o: https://atlas-auth.web.cern.ch/ g: /atlas
+x atlastknuser /xrootd/atlas rl
+
+= wlcgtknuser o: https://wlcg.cloud.cnaf.infn.it/ g: /wlcg
+x wlcgtknuser /xrootd/atlas/tpctest rwildn
+g /wlcg /xrootd/atlas/tpctest rwildn
