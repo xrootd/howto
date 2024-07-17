@@ -36,10 +36,8 @@ s3 = boto3.client('s3',
                   config=Config()
                   )
 
-objectExist = 0
 try:
     s3.head_object(Bucket=bucket, Key=objkey)
-    objectExist = 1
 except botocore.exceptions.ClientError as e:
     if e.response['Error']['Code'] == "404":
         print("File not found")
@@ -47,15 +45,19 @@ except botocore.exceptions.ClientError as e:
         # Unauthorized, including invalid bucket
         print("Unauthorized Access")
     else:
-        print("Error Accessing file" + file)
+        print("Error Accessing file " + file)
     exit(1)
 
-tags = s3.get_object_tagging(Bucket=bucket, Key=objkey)
-if 'TagSet' in tags.keys():
-    for tag in tags['TagSet']:
-        if tag['Key'] == cksmtype:
-           print(tag['Value'])
-           exit(0)
+hasTag = 1
+try:
+    tags = s3.get_object_tagging(Bucket=bucket, Key=objkey)
+    if 'TagSet' in tags.keys():
+        for tag in tags['TagSet']:
+            if tag['Key'] == cksmtype:
+               print(tag['Value'])
+               exit(0)
+except:
+    hasTag = 0
 
 data = s3.get_object(Bucket=bucket, Key=objkey)
 f = data['Body']
@@ -77,7 +79,11 @@ else:
     print("%s not implemented" % cksmtype)
     exit(1)
 
-if not 'TagSet' in tags.keys():
-    tags['TagSet'] = []
-tags['TagSet'].append({ 'Key': cksmtype, 'Value': cksm })
-s3.put_object_tagging(Bucket=bucket, Key=objkey, Tagging={ 'TagSet': tags['TagSet']})
+if hasTag:
+    if not 'TagSet' in tags.keys():
+        tags['TagSet'] = []
+    tags['TagSet'].append({ 'Key': cksmtype, 'Value': cksm })
+    try:
+        s3.put_object_tagging(Bucket=bucket, Key=objkey, Tagging={ 'TagSet': tags['TagSet']})
+    except:
+        pass
