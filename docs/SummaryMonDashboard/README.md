@@ -10,6 +10,23 @@ xrd.report 127.0.0.1:9300 every 60s link
 The directive says to send `link` related info (bytes in and out of Xrootd to WAN) every 60s to host 127.0.0.1 
 at UDP port 9300
 
+The monitoring info it will send out is in XML format, like this:
+```
+<statistics tod="1725485991" ver="v5.6.9" src="sdfdtn005.sdf.slac.stanford.edu:2094" tos="1725485980" pgm="xrootd" ins="atlas" pid="482140" site="SLAC">
+    <stats id="link">
+        <num>1</num>
+        <maxn>4</maxn>
+        <tot>14</tot>
+        <in>158400</in>
+        <out>85782</out>
+        <ctime>14</ctime>
+        <tmo>0</tmo>
+        <stall>0</stall>
+        <sfps>0</sfps>
+    </stats>
+</statistics>
+```
+
 # Run a collector that saves info for Telegraf
 
 The following python script running on 127.0.0.1 will receive the Xrootd summary monitoring info sent out by
