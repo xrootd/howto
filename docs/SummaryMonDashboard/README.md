@@ -1,0 +1,85 @@
+The page provide a prototype setting that allow displaying Xrootd summary monitory into on a Grafana
+dashboard. It assume that a functioning `Telegraf/InfluxDB/Grafana` system is available. 
+
+# Setting in Xrootd
+
+Add the following line to your xrootd configuration file:
+```
+xrd.report 127.0.0.1:9300 every 60s link
+```
+The directive says to send `link` related info (bytes in and out of xrootd to WAN) every 60s to host 127.0.0.1 
+at UDP port 9300
+
+# Run a collector that saves info for Telegraf
+
+The following python script running on 127.0.0.1 will receive the xrootd summary monitoring info sent out by
+the above xrootd server, calculate the speed of network bytes in and out, and save the data in the 
+InfluxDB line protocol format to a file (`/var/xrdsummon.telegraf.log`).
+```
+#!/usr/bin/python3
+
+import socket
+import datetime
+import xml.etree.ElementTree as ET
+
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+serverSocket.bind(('', 9300))
+
+myexpr = "atlas"
+nlines2keep = 720
+logfile = "/tmp/xrdsummon.telegraf.log"
+
+t = 0
+ibytes = 0
+obytes = 0
+while True:
+    message, address = serverSocket.recvfrom(1024)
+    root = ET.fromstring(message)
+    t0 = t 
+    ibytes0 = ibytes 
+    obytes0 = obytes 
+    t = datetime.datetime.now().timestamp()
+    for child in root[0]:
+        if child.tag == "in":
+            ibytes = int(child.text)
+        elif child.tag == "out":
+            obytes = int(child.text)
+    if t0 == 0:
+        continue
+    with open(logfile, "a") as out_file:
+        ispeed = max(0, int((ibytes-ibytes0)/(t-t0)))
+        ospeed = max(0, int((obytes-obytes0)/(t-t0)))
+        # see https://docs.influxdata.com/influxdb/v2/reference/syntax/line-protocol/
+        out_file.write("xrootd,host=%s,expr=%s ibytes=%d,obytes=%d %d\n" % (socket.getfqdn(), myexpr, ispeed, ospeed, t*1000000000))
+
+# keep only the last "nline2keep" lines
+#    with open(logfile, "r") as in_file:
+#        lines = in_file.readlines()
+#    with open(logfile, "w") as out_file:
+#        for i in range(len(lines)-nlines2keep, len(lines)):
+#            if i >= 0:
+#                out_file.write(lines[i])
+```
+
+# Config Telegraf
+
+Add the following file to /etc/telegraf/telegraf.d/30-xrootd.conf
+```
+[[inputs.exec]]
+    commands = ["cat /tmp/xrdsummon.telegraf.log"]
+    timeout = "30s"
+    data_format = "influx"
+```
+
+Now you are ready to go to your Grafana to create a monitoring dashboard. An example Grafana query of InfluxDB 
+can be like this:
+```
+SELECT mean("ibytes")  / 1024 FROM "xrootd" WHERE ("expr"::tag = 'atlas') AND $timeFilter GROUP BY time($__interval) fill(null)
+```
+
+In this setup, the data collection
+frequence is determined by the `xrd.report ... every 60s ...` setting in the xrootd config file. If the frequence
+is low, you may want to check `collect null values` box when you create your Grafana dashboard (under 
+`Graph Style` at the right panel).
+
+
