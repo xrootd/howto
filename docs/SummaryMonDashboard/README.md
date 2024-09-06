@@ -25,7 +25,6 @@ import xml.etree.ElementTree as ET
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverSocket.bind(('', 9300))
 
-myexpr = "atlas"
 nlines2keep = 720
 logfile = "/tmp/xrdsummon.telegraf.log"
 
@@ -39,6 +38,10 @@ while True:
     ibytes0 = ibytes 
     obytes0 = obytes 
     t = datetime.datetime.now().timestamp()
+    if root.tag == 'statistics':
+        hostport = root.attrib['src']
+        instance = root.attrib['ins']
+        sitename = root.attrib['site']
     for child in root[0]:
         if child.tag == "in":
             ibytes = int(child.text)
@@ -50,7 +53,8 @@ while True:
         ispeed = max(0, int((ibytes-ibytes0)/(t-t0)))
         ospeed = max(0, int((obytes-obytes0)/(t-t0)))
         # see https://docs.influxdata.com/influxdb/v2/reference/syntax/line-protocol/
-        out_file.write("xrootd,host=%s,expr=%s ibytes=%d,obytes=%d %d\n" % (socket.getfqdn(), myexpr, ispeed, ospeed, t*1000000000))
+        out_file.write("xrootd,host=%s,instance=%s,site=%s ibytes=%d,obytes=%d %d\n" %
+                       (hostport, instance, sitename, ispeed, ospeed, t*1000000000))
 
 # keep only the last "nline2keep" lines
 #    with open(logfile, "r") as in_file:
@@ -74,7 +78,7 @@ Add the following file to /etc/telegraf/telegraf.d/30-xrootd.conf
 Now you are ready to go to your Grafana to create a monitoring dashboard. An example Grafana query of InfluxDB 
 can be like this:
 ```
-SELECT mean("ibytes")  / 1024 FROM "xrootd" WHERE ("expr"::tag = 'atlas') AND $timeFilter GROUP BY time($__interval) fill(null)
+SELECT mean("ibytes")  / 1024 FROM "xrootd" WHERE ("instance"::tag = 'atlas') AND $timeFilter GROUP BY time($__interval) fill(null)
 ```
 
 In this setup, the data collection
