@@ -42,11 +42,13 @@ while True:
         hostport = root.attrib['src']
         instance = root.attrib['ins']
         sitename = root.attrib['site']
-    for child in root[0]:
-        if child.tag == "in":
-            ibytes = int(child.text)
-        elif child.tag == "out":
-            obytes = int(child.text)
+    for child in root:
+        if child.attrib['id'] == 'link':
+            for item in child:
+                if item.tag == "in":
+                    ibytes = int(item.text)
+                elif item.tag == "out":
+                    obytes = int(item.text)
     if t0 == 0:
         continue
     with open(logfile, "a") as out_file:
