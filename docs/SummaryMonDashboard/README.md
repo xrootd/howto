@@ -1,19 +1,19 @@
-The page provide a prototype setting that allow displaying Xrootd summary monitory into on a Grafana
+The page provides a prototype setting that allow displaying Xrootd summary monitory into on a Grafana
 dashboard. It assume that a functioning `Telegraf/InfluxDB/Grafana` system is available. 
 
 # Setting in Xrootd
 
-Add the following line to your xrootd configuration file:
+Add the following line to your Xrootd configuration file:
 ```
 xrd.report 127.0.0.1:9300 every 60s link
 ```
-The directive says to send `link` related info (bytes in and out of xrootd to WAN) every 60s to host 127.0.0.1 
+The directive says to send `link` related info (bytes in and out of Xrootd to WAN) every 60s to host 127.0.0.1 
 at UDP port 9300
 
 # Run a collector that saves info for Telegraf
 
-The following python script running on 127.0.0.1 will receive the xrootd summary monitoring info sent out by
-the above xrootd server, calculate the speed of network bytes in and out, and save the data in the 
+The following python script running on 127.0.0.1 will receive the Xrootd summary monitoring info sent out by
+the above Xrootd server, calculate the speed of network bytes in and out, and save the data in the 
 InfluxDB line protocol format to a file (`/var/xrdsummon.telegraf.log`).
 ```
 #!/usr/bin/python3
@@ -78,7 +78,7 @@ SELECT mean("ibytes")  / 1024 FROM "xrootd" WHERE ("expr"::tag = 'atlas') AND $t
 ```
 
 In this setup, the data collection
-frequence is determined by the `xrd.report ... every 60s ...` setting in the xrootd config file. If the frequence
+frequency is determined by the `xrd.report ... every 60s ...` setting in the Xrootd config file. If the frequency
 is low, you may want to check `collect null values` box when you create your Grafana dashboard (under 
 `Graph Style` at the right panel).
 
