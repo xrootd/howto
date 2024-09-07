@@ -31,7 +31,7 @@ The monitoring info it will send out is in XML format, like this:
 
 The following python script running on 127.0.0.1 will receive the Xrootd summary monitoring info sent out by
 the above Xrootd server, calculate the speed of network bytes in and out, and save the data in the 
-InfluxDB line protocol format to a file (`/var/xrdsummon.telegraf.log`).
+InfluxDB line protocol format to a file (`/tmp/xrdsummon.telegraf.log`).
 ```
 #!/usr/bin/python3
 
