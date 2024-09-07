@@ -1,7 +1,9 @@
+# Setting Up a Summary Monitoring Dashboard in Grafana
+
 The page provides a prototype setting that allow displaying Xrootd summary monitory into on a Grafana
 dashboard. It assume that a functioning `Telegraf/InfluxDB/Grafana` system is available. 
 
-# Setting in Xrootd
+## Setting in Xrootd
 
 Add the following line to your Xrootd configuration file:
 ```
@@ -27,7 +29,7 @@ The monitoring info it will send out is in XML format, like this:
 </statistics>
 ```
 
-# Run a collector that saves info for Telegraf
+## Run a collector that saves info for Telegraf
 
 The following python script running on 127.0.0.1 will receive the Xrootd summary monitoring info sent out by
 the above Xrootd server, calculate the speed of network bytes in and out, and save the data in the 
@@ -84,7 +86,7 @@ while True:
 #                out_file.write(lines[i])
 ```
 
-# Config Telegraf
+## Config Telegraf
 
 Add the following file to /etc/telegraf/telegraf.d/30-xrootd.conf
 ```
