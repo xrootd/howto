@@ -47,15 +47,9 @@ serverSocket.bind(('', 9300))
 nlines2keep = 720
 logfile = "/tmp/xrdsummon.telegraf.log"
 
-t = 0
-ibytes = 0
-obytes = 0
 while True:
     message, address = serverSocket.recvfrom(1024)
     root = ET.fromstring(message)
-    t0 = t 
-    ibytes0 = ibytes 
-    obytes0 = obytes 
     t = datetime.datetime.now().timestamp()
     if root.tag == 'statistics':
         hostport = root.attrib['src']
@@ -68,22 +62,18 @@ while True:
                     ibytes = int(item.text)
                 elif item.tag == "out":
                     obytes = int(item.text)
-    if t0 == 0:
-        continue
     with open(logfile, "a") as out_file:
-        ispeed = max(0, int((ibytes-ibytes0)/(t-t0)))
-        ospeed = max(0, int((obytes-obytes0)/(t-t0)))
         # see https://docs.influxdata.com/influxdb/v2/reference/syntax/line-protocol/
-        out_file.write("xrootd,host=%s,instance=%s,site=%s ibytes=%d,obytes=%d %d\n" %
-                       (hostport, instance, sitename, ispeed, ospeed, t*1000000000))
-
-# keep only the last "nline2keep" lines
-#    with open(logfile, "r") as in_file:
-#        lines = in_file.readlines()
-#    with open(logfile, "w") as out_file:
-#        for i in range(len(lines)-nlines2keep, len(lines)):
-#            if i >= 0:
-#                out_file.write(lines[i])
+        out_file.write("xrootd,host=%s,instance=%s,site=%s ibytes=%d,obytes=%d %d\n" % 
+                       (hostport, instance, sitename, ibytes, obytes, t*1000000000))
+    # Trim the log files size in random occasions, in about 10% of the time
+    #if ( (t % 1) * 100 > 90 ):
+    #    with open(logfile, "r") as in_file:
+    #        lines = in_file.readlines()
+    #    with open(logfile, "w") as out_file:
+    #        for i in range(len(lines)-nlines2keep, len(lines)):
+    #            if i >= 0:
+    #                out_file.write(lines[i])
 ```
 
 ## Config Telegraf
@@ -99,12 +89,11 @@ Add the following file to /etc/telegraf/telegraf.d/30-xrootd.conf
 Now you are ready to go to your Grafana to create a monitoring dashboard. An example Grafana query of InfluxDB 
 can be like this:
 ```
-SELECT mean("ibytes")  / 1024 FROM "xrootd" WHERE ("instance"::tag = 'atlas') AND $timeFilter GROUP BY time($__interval) fill(null)
+SELECT non_negative_derivative(mean("ibytes"), 1s) FROM "xrootd" WHERE ("instance"::tag = 'atlas') AND $timeFilter GROUP BY time($__interval)
 ```
 
-In this setup, the data collection
-frequency is determined by the `xrd.report ... every 60s ...` setting in the Xrootd config file. If the frequency
-is low, you may want to check `collect null values` box when you create your Grafana dashboard (under 
-`Graph Style` at the right panel).
+In this setup, the data collection frequency is determined by the `xrd.report ... every 60s ...` setting 
+in the Xrootd config file. Multiply Xrootd instances can send the summary monitoring info to the same 
+receiver process. 
 
 
