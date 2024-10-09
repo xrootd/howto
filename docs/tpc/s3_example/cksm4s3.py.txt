@@ -21,6 +21,18 @@ else:
     cksmtype = sys.argv[1]
     file = sys.argv[2]
 
+fileurl = os.environ['XRDXROOTD_PROXYURL'] + file
+o = urllib3.util.parse_url(fileurl)
+
+endPointUrl = o.scheme + "://" + o.host
+if o.port is not None:
+    endPointUrl += ":" + str(o.port)
+if o.scheme == "https":
+    useSSL = True
+else:
+    useSSL = False
+file = o.path.replace("//", "/")
+
 pathitems = file.split('/')
 bucket = pathitems[1]
 pathitems[0] = ''
@@ -31,8 +43,8 @@ objkey = '/'.join(pathitems[2:])
 s3 = boto3.client('s3',
                   aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
                   aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-                  endpoint_url='https://' + os.environ['XRDXROOTD_PROXY'],
-                  verify=False,
+                  endpoint_url=endPointUrl,
+                  verify=useSSL,
                   config=Config()
                   )
 

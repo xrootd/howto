@@ -1,6 +1,9 @@
 # Note: This file container AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY. 
 # Do not share, and do not allow others to read.
 
+# the combinatin of all.export, pss.origin and pss.arena exports S3 path 
+# https://s3.slac.stanford.edu:9443/bucket/xrootd/atlas
+
 all.sitename MYSITE
 all.export /xrootd/atlas
 xrd.port 1094
@@ -8,6 +11,8 @@ xrd.port 1094
 xrootd.async off
 ofs.osslib libXrdPss.so
 pss.origin https://s3.slac.stanford.edu:9443
+pss.arena = /bucket
+
 setenv DAVIX_DISABLE_SESSION_CACHING = 1
 setenv DAVPOSIX_MPUPLOAD = 1
 

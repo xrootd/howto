@@ -1,9 +1,6 @@
 #!/bin/sh
 
 unset LD_PRELOAD
-export XRD_CPPARALLELCHUNKS=16
-export XRD_CPCHUNKSIZE=262144
-
 set -- `getopt S: -S 1 $*`
 while [ $# -gt 0 ]
 do
@@ -22,9 +19,5 @@ done
 
 src=$1
 dst=$2
-
-if [ -z "$XRDXROOTD_PROXY" ]; then
-    xrdcp --server $TCPstreamOpts -f $src ${dst}
-else
-    xrdcp --server $TCPstreamOpts -f $src root://$XRDXROOTD_PROXY/${dst}
-fi
+xrdcp --server -s $TCPstreamOpts $src - | \
+  /usr/local/bin/aws --endpoint-url $XRDXROOTD_PROXYURL s3 cp - s3:/${dst}
