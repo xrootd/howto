@@ -55,7 +55,7 @@ with the following additional configurations:
 file=$1
 davix-get --s3accesskey $AWS_ACCESS_KEY_ID \
           --s3secretkey $AWS_SECRET_ACCESS_KEY \
-          --s3alternate https://${XRDXROOTD_PROXY}$file | xrdadler32 | awk '{print $1}'
+          --s3alternate https://${XRDXROOTD_PROXYURL}$file | xrdadler32 | awk '{print $1}'
 ```
 
 As you see from the above script, the ckecksum is calculated by fetching (using `davix-get`)
@@ -70,26 +70,10 @@ the file from the s3 storage. There are two drawbacks:
 
 ```
 #!/bin/sh
-set -- `getopt S: -S 1 $*`
-while [ $# -gt 0 ]
-do
-  case $1 in
-  -S)
-      ((nstreams=$2-1))
-      [ $nstreams -ge 1 ] && TCPstreamOpts="-S $nstreams"
-      shift 2
-      ;;
-  --)
-      shift
-      break
-      ;;
-  esac
-done
 
 src=$1
 dst=$2
-xrdcp --server -s $TCPstreamOpts $src - | \
-  aws --endpoint-url https://$XRDXROOTD_PROXY s3 cp - s3:/$dst 2>/dev/null
+xrdcp - | aws --endpoint-url https://$XRDXROOTD_PROXYURL s3 cp - s3:/$dst 2>/dev/null
 ```
 
 In the script, `aws` is the [AWS Command Line Interface](https://aws.amazon.com/cli/). Loading `aws`
