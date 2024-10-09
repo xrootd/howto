@@ -71,6 +71,22 @@ the file from the s3 storage. There are two drawbacks:
 ```
 #!/bin/sh
 
+set -- `getopt S: -S 1 $*`
+while [ $# -gt 0 ]
+do
+  case $1 in
+  -S)
+      ((nstreams=$2-1))
+      [ $nstreams -ge 1 ] && TCPstreamOpts="-S $nstreams"
+      shift 2
+      ;;
+  --)
+      shift
+      break
+      ;;
+  esac
+done
+
 src=$1
 dst=$2
 xrdcp - | aws --endpoint-url https://$XRDXROOTD_PROXYURL s3 cp - s3:/$dst 2>/dev/null
