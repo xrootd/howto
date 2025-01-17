@@ -12,8 +12,8 @@ For this reason, the `cms.dfs` directive is used.
 ## Kubernetes deployment
 
 As a general rule, all Kubernetes infrastructures are not the same. The `services.yaml` here assumes using
-a load-balancer `metallb.universe.tf` (and address poll `my-address-pool`). Your k8s infrastructure may
-use a different kind of load-balancer.
+a load-balancer [`metallb.universe.tf`](https://metallb.io) (and address pool `my-address-pool`). Your 
+k8s infrastructure may use a different kind of load-balancer.
 
 It also expects up-to-dated CAs and VOMS LSCs in a subdir `etc/grid-security/{certificates, vomsdir}` under
 PVC `my-pvc`. These CAs and VOMS LSCs will be bind mounted to the containers. So they should be updated
