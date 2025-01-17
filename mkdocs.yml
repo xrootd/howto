@@ -12,6 +12,7 @@ nav:
     - 'Erasure Coding': ec/README.md
     - 'Tape Endpoint Demo' : preplib4tape/README.md
     - 'Network IO Monitoring Dashboard' : NetIOmon/README.md
+    - 'Customizing Systemd Service' : systemd/README.md
 theme: 
   name: readthedocs
   plugins: 
