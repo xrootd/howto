@@ -34,7 +34,7 @@ kubectl --kubeconfig ... -n xrdrdr apply -f deployment.yaml
 
 ## Download the example
 
-Download this [Tarball](rdr_in_k8s.tar.gz.base64). It contents the Kubernetes yamls, Xrootd Dockerfile and 
+Download this [tarball](rdr_in_k8s.tar.gz.base64). It contents the Kubernetes yamls, Xrootd Dockerfile and 
 Xrootd configuration. Then run
 ```
 cat rdr_in_k8s.tar.gz.base64 | base64 -d > rdr_in_k8s.tar.gz
