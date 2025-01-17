@@ -13,6 +13,7 @@ nav:
     - 'Tape Endpoint Demo' : preplib4tape/README.md
     - 'Network IO Monitoring Dashboard' : NetIOmon/README.md
     - 'Customizing Systemd Service' : systemd/README.md
+    - 'Redirector in Kubernetes' : k8s/xrdrdr/README.md
 theme: 
   name: readthedocs
   plugins: 
