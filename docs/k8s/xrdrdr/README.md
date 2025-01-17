@@ -11,7 +11,7 @@ For this reason, the `cms.dfs` directive is used.
 
 ## Kubernetes deployment
 
-As a general rule, all Kubernetes infrastructures are not the same. The `services.yaml` here assumes using
+In general, all Kubernetes infrastructures are not the same. The `services.yaml` here assumes using
 a load-balancer [`metallb.universe.tf`](https://metallb.io) (and address pool `my-address-pool`). Your 
 k8s infrastructure may use a different kind of load-balancer.
 
