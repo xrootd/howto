@@ -36,10 +36,16 @@ From: almalinux:9
   dnf install -y git cmake cmake3 make gcc gcc-c++ gdb
   dnf install -y autoconf automake libtool libasan
 
+  # Install gfal2, FTS clients, Rucio clients
  #dnf install -y gfal2-util-scripts gfal2-python3 gfal2-plugin-file gfal2-plugin-http python3-gfal2-util
  #dnf install -y fts-rest-cli 
  #python3 -m pip install -U pip
  #pip3 install rucio-clients
+
+  # To compile FTS3 (then, in fts3 git repo, 'cmake -DALLBUILD=ON')
+ #dnf install -y boost-devel glib2-devel libdirq-devel mysql-devel soci-mysql-devel \
+ #               activemq-cpp-devel gfal2-devel jsoncpp-devel cryptopp-devel cppzmq-devel \
+ #               gridsite-devel globus-gsi-credential-devel protobuf-devel
 
   dnf update -y
   dnf clean all
