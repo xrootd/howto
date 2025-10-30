@@ -75,6 +75,9 @@ acc.authrefresh 60
 ofs.authorize 1
 ```
 
+Avoid using `all.adminpath`, `all.pidpath`, `all.homepath`, etc. in the xrootd configuration file, as these paths
+will be set in the systemd service unit file (below).
+
 ### Step 3: Create systemd service file
 
 Create a systemd service file `$HOME/.config/systemd/user/xrootd@.service` with the following content:
