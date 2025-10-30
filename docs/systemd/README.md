@@ -68,8 +68,11 @@ The following is a simple example that illustrates the necessary settings. Adjus
 all.sitename MYSITE
 set home = $HOME
 all.export /data  # adjust to your data directory
-all.adminpath $(home)/var/spool/xrootd
-all.pidpath $(home)/var/run/xrootd
+
+acc.audit deny
+acc.authdb $(home)/etc/xrootd/auth_file
+acc.authrefresh 60
+ofs.authorize 1
 ```
 
 ### Step 3: Create systemd service file
@@ -83,7 +86,11 @@ Documentation=man:xrootd(8)
 Documentation=http://xrootd.org/docs.html
 
 [Service]
-ExecStart=/usr/bin/xrootd -l %h/var/log/xrootd/xrootd.log -c %h/etc/xrootd/xrootd-%i.cfg -k fifo -n %i
+ExecStart=/usr/bin/xrootd -c %h/etc/xrootd/xrootd-%i.cfg \
+                          -l %h/var/log/xrootd/xrootd.log \
+                          -s %h/var/run/xrootd/xrootd-%i.pid \
+                          -a %h/var/spool/xrootd \
+                          -k fifo -n %i
 Type=simple
 Restart=on-abort
 RestartSec=10
