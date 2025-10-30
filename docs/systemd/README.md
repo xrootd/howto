@@ -90,6 +90,7 @@ ExecStart=/usr/bin/xrootd -c %h/etc/xrootd/xrootd-%i.cfg \
                           -l %h/var/log/xrootd/xrootd.log \
                           -s %h/var/run/xrootd/xrootd-%i.pid \
                           -a %h/var/spool/xrootd \
+                          -w %h/var/spool/xrootd \
                           -k fifo -n %i
 Type=simple
 Restart=on-abort
