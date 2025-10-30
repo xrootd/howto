@@ -49,7 +49,7 @@ After creating the customization file, run `sudo systemctl daemon-reload`.
 
 Xrootd's systemd services can also be run from user's home directory without sudo privilegs. In the example below, 
 we place xrootd configruation file under $HOME/etc/xrootd, and other administrative and log files under $HOME/var
-so as to make the service completed under user's control. 
+so as to make the service completely under user's control. 
 
 ### Step 1: Create necessary directories
 
@@ -110,7 +110,8 @@ first if it exists. If it does not exist, it will use `xrootd@.service` file to 
    * `systemctl --user start xrootd@myinstance`
    * `systemctl --user status xrootd@myinstance`
    * `systemctl --user stop xrootd@myinstance`
-   * `journalctl --user -u xrootd@myinstance` to check the log messages of the service.
+   * `journalctl --user -u xrootd@myinstance` to check the log messages of the service (if you are in group
+`systemd-journal`).
    * `systemctl --user disable xrootd@myinstance`
 
 To make the user systemd services start automatically at user login (and persist through logout and system
