@@ -1,4 +1,9 @@
-# Customize Xrootd's Systemd Services
+# Xrootd Systemd Service Customization Guide
+This document describes how to customize Xrootd's systemd services to fit specific operational needs. There are 
+two ways to customize the services: customizing the systemd services with sudo privilegs, and run systemd services
+completed from user's home directory without sudo privilegs.
+
+## Customize Xrootd's systemd services with sudo privilegs
 
 Xrootd releases ship systemd services in `/usr/lib/systemd/system/xrootd@.service` and
 `/usr/lib/systemd/system/cmsd@.service` They can be cumstized to fit the operational need.
@@ -40,5 +45,77 @@ started:
 
 After creating the customization file, run `sudo systemctl daemon-reload`.
 
+## Running Xrootd's systemd services from user's home directory without sudo privilegs
 
+Xrootd's systemd services can also be run from user's home directory without sudo privilegs. In the example below, 
+we place xrootd configruation file under $HOME/etc/xrootd, and other administrative and log files under $HOME/var
+so as to make the service completed under user's control. 
 
+### Step 1: Create necessary directories
+
+Create the following directories:
+
+   * $HOME/etc/xrootd
+   * $HOME/var/spool/xrootd $HOME/var/log/xrootd $HOME/var/run/xrootd
+   * $HOME/.config/systemd/user
+
+### Step 2: Create Xrootd configuration file
+
+Create a xrootd configuration file ~/etc/xrootd/xrootd-myinstance.cfg (`myinstance` is the instance name of xrootd).
+The following is a simple example that illustrates the necessary settings. Adjust the settings to fit your need.
+
+```
+all.sitename MYSITE
+set home = $HOME
+all.export /data  # adjust to your data directory
+all.adminpath $(home)/var/spool/xrootd
+all.pidpath $(home)/var/run/xrootd
+```
+
+### Step 3: Create systemd service file
+
+Create a systemd service file `$HOME/.config/systemd/user/xrootd@.service` with the following content:
+
+```
+[Unit]
+Description=XRootD xrootd daemon instance %I
+Documentation=man:xrootd(8)
+Documentation=http://xrootd.org/docs.html
+
+[Service]
+ExecStart=/usr/bin/xrootd -l %h/var/log/xrootd/xrootd.log -c %h/etc/xrootd/xrootd-%i.cfg -k fifo -n %i
+Type=simple
+Restart=on-abort
+RestartSec=10
+KillMode=control-group
+LimitNOFILE=65536
+WorkingDirectory=/var/spool/xrootd
+
+[Install]
+RequiredBy=default.target
+```
+
+Notes:
+
+   * Do not use The `User=` and `Group=` lines in the [Service] section.
+   * The log file and config file paths are adjusted to point to user's home directory. 
+   * In systemd service unit files, use `%h` instead of `$HOME`.
+
+### Step 4: Enable and start the service
+
+The following commands can be used to enalbe/disable/start/stop, etc.
+
+   * `systemctl --user enable xrootd@myinstance`. This command will use `xrootd@myinstance.service` file
+first if it exists. If it does not exist, it will use `xrootd@.service` file to create the service instance.
+   * `systemctl --user start xrootd@myinstance`
+   * `systemctl --user status xrootd@myinstance`
+   * `systemctl --user stop xrootd@myinstance`
+   * `journalctl --user -u xrootd@myinstance` to check the log messages of the service.
+   * `systemctl --user disable xrootd@myinstance`
+
+To make the user systemd services start automatically at user login (and persist through logout and system
+reboot), run the following command (once):
+
+```
+loginctl enable-linger
+```
