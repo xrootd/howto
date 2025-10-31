@@ -100,7 +100,7 @@ Restart=on-abort
 RestartSec=10
 KillMode=control-group
 LimitNOFILE=65536
-WorkingDirectory=/var/spool/xrootd
+#WorkingDirectory=/var/spool/xrootd
 
 [Install]
 RequiredBy=default.target
